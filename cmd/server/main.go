@@ -37,7 +37,7 @@ func main() {
 		}
 	}()
 
-	fmt.Println("Server started on :", port)
+	fmt.Println("Server started on port:", port)
 
 	// Graceful shutdown
 	stop := make(chan os.Signal, 1)
