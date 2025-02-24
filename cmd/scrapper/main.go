@@ -1,3 +1,3 @@
-package scrapper
+package main
 
 func main() {}
