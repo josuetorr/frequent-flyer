@@ -9,11 +9,10 @@ import (
 )
 
 func main() {
+	// TODO: call correct env file depending on env
 	godotenv.Load(".dev.env")
 
 	ctx := context.Background()
 	dbPool := data.Init(ctx)
 	defer dbPool.Close()
-
-	println("hello, world!")
 }

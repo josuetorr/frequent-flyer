@@ -14,7 +14,7 @@ type DBPool = pgxpool.Pool
 func Init(ctx context.Context) *DBPool {
 	user := os.Getenv("POSTGRES_USER")
 	psswrd := os.Getenv("POSTGRES_PASSWORD")
-	port := os.Getenv("POSTGRES_HOST_POST")
+	port := os.Getenv("POSTGRES_HOST_PORT")
 	dbName := os.Getenv("POSTGRES_DB_NAME")
 
 	connStr := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s", user, psswrd, port, dbName)
