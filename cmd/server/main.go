@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"context"
@@ -11,4 +11,6 @@ func main() {
 	ctx := context.Background()
 	dbPool := data.Init(ctx)
 	defer dbPool.Close()
+
+	println("hello, world!")
 }
