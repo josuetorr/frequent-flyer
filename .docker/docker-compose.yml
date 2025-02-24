@@ -1,0 +1,20 @@
+services:
+  couchdb:
+    image: couchdb:${COUCHDB_VERSION}
+    container_name: ${COUCHDB_CONTAINER_NAME}
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    ports:
+      - "${COUCHDB_HOST_PORT}:5984" # Expose CouchDB on port 5984
+    volumes:
+      - couchdb-data:/opt/couchdb/data # Persist data on the host machine
+
+volumes:
+  couchdb-data: # Named volume to persist CouchDB data
+    name: ${COUCHDB_VOLUME}
+
+networks:
+  default:
+    name: ${NETWORK_NAME}
+    driver: ${NETWORK_DRIVER}
