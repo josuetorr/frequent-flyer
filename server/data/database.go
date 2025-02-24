@@ -23,16 +23,15 @@ func Init(ctx context.Context) *DBPool {
 		log.Fatalf("Could not create connection pool to postgres... %s", err.Error())
 	}
 
-	// Check if the database exists
 	var exists bool
-	err = dbPool.QueryRow(context.Background(), "SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = 'mydatabase')").Scan(&exists)
+	err = dbPool.QueryRow(ctx, fmt.Sprintf("SELECT EXISTS(SELECT 1 FROM pg_database WHERE datname = '%s')", dbName)).Scan(&exists)
 	if err != nil {
 		log.Fatal("Query failed:", err)
 	}
 
 	if !exists {
 		fmt.Println("Database does not exist. Creating...")
-		_, err := dbPool.Exec(ctx, "CREATE DATABASE mydatabase")
+		_, err := dbPool.Exec(ctx, fmt.Sprintf("CREATE DATABASE %s", dbName))
 		if err != nil {
 			log.Fatal("Failed to create database:", err)
 		}
