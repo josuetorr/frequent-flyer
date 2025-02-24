@@ -1,4 +1,4 @@
-module github.com/josuetorr/groceries-app
+module github.com/josuetorr/frequent-flyer
 
 go 1.24.0
 
