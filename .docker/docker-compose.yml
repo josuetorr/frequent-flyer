@@ -11,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data # Persist data
     networks:
-      - app_network
+      - default
 
 volumes:
   postgres_data: # This will create a Docker volume for persistent storage
