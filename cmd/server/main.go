@@ -2,10 +2,17 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv"
 	"github.com/josuetorr/frequent-flyer/server/data"
+	"github.com/josuetorr/frequent-flyer/server/routes"
 )
 
 func main() {
@@ -15,4 +22,35 @@ func main() {
 	ctx := context.Background()
 	dbPool := data.Init(ctx)
 	defer dbPool.Close()
+
+	r := routes.RegisterRoutes()
+	port := "3000"
+
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: r,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			_ = fmt.Errorf("Server error: %s", err)
+		}
+	}()
+
+	fmt.Println("Server started on :", port)
+
+	// Graceful shutdown
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+	<-stop
+
+	fmt.Println("Shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		fmt.Println("Server forced to shutdown:", err)
+	}
+
+	fmt.Println("Server exited.")
 }
