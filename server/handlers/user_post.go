@@ -17,6 +17,11 @@ func NewPostUserHandler(log *slog.Logger, service UserService) PostUserHandler {
 }
 
 func (h PostUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ct := r.Header.Get("Content-Type")
+	if ct != "application/json" {
+		http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
+		return
+	}
 	defer r.Body.Close()
 
 	var u User
