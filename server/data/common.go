@@ -1,8 +1,19 @@
 package data
 
-import "github.com/josuetorr/frequent-flyer/server/models"
+import (
+	"context"
+
+	"github.com/josuetorr/frequent-flyer/server/models"
+)
 
 type (
 	ID   = models.ID
 	User = models.User
 )
+
+type Repository[T any] interface {
+	Insert(context.Context, *T) error
+	Get(context.Context, ID) (*T, error)
+	Update(context.Context, ID, *T) error
+	Delete(context.Context, ID, bool) error
+}

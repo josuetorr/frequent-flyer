@@ -24,7 +24,7 @@ type UserRepository struct {
 	db *DBPool
 }
 
-func NewUserRepositor(db *DBPool) *UserRepository {
+func NewUserRepositor(db *DBPool) Repository[User] {
 	return &UserRepository{db: db}
 }
 
