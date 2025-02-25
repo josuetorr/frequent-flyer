@@ -6,7 +6,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/models"
 )
 
-const createUserStmt = "INSERT INTO users (firstname,lastname,email) VALUES ($1,$2,$3)"
+const createUserStmt = "INSERT INTO users (firstname, lastname, email, verified) VALUES ($1, $2, $3, $4)"
 
 type UserRepository struct {
 	db *DBPool
@@ -17,6 +17,6 @@ func NewUserRepositor(db *DBPool) *UserRepository {
 }
 
 func (r *UserRepository) Insert(ctx context.Context, user *models.User) error {
-	_, err := r.db.Exec(ctx, createUserStmt, user)
+	_, err := r.db.Exec(ctx, createUserStmt, user.Firstname, user.Lastname, user.Email, user.Verified)
 	return err
 }
