@@ -23,7 +23,7 @@ func main() {
 	dbPool := data.Init(ctx)
 	defer dbPool.Close()
 
-	r := routes.RegisterRoutes()
+	r := routes.RegisterRoutes(dbPool)
 	port := "3000"
 
 	server := &http.Server{
