@@ -4,8 +4,8 @@ import "net/http"
 
 type DeleteUserHandler struct{}
 
-func NewDeleteUserHanlder() DeleteUserHandler {
-	return DeleteUserHandler{}
+func NewDeleteUserHanlder() *DeleteUserHandler {
+	return &DeleteUserHandler{}
 }
 
-func (h DeleteUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {}
+func (h *DeleteUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {}
