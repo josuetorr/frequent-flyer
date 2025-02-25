@@ -6,6 +6,12 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/models"
 )
 
+type (
+	ID   = models.ID
+	User = models.User
+)
+
 type UserRepository interface {
-	Insert(context.Context, *models.User) error
+	Insert(context.Context, *User) error
+	Get(context.Context, ID) (*User, error)
 }

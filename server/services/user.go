@@ -17,3 +17,7 @@ func NewUserService(repo UserRepository) *UserService {
 func (s *UserService) Insert(ctx context.Context, user *models.User) error {
 	return s.repo.Insert(ctx, user)
 }
+
+func (s *UserService) Get(ctx context.Context, id ID) (*User, error) {
+	return s.repo.Get(ctx, id)
+}
