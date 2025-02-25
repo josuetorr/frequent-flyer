@@ -25,3 +25,7 @@ func (s *UserService) Get(ctx context.Context, id ID) (*User, error) {
 func (s *UserService) Update(ctx context.Context, id ID, u *User) error {
 	return s.repo.Update(ctx, id, u)
 }
+
+func (s *UserService) Delete(ctx context.Context, id ID, hard bool) error {
+	return s.repo.Delete(ctx, id, hard)
+}
