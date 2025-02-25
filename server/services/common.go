@@ -14,4 +14,5 @@ type (
 type UserRepository interface {
 	Insert(context.Context, *User) error
 	Get(context.Context, ID) (*User, error)
+	Update(context.Context, ID, *User) error
 }

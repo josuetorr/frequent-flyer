@@ -21,3 +21,7 @@ func (s *UserService) Insert(ctx context.Context, user *models.User) error {
 func (s *UserService) Get(ctx context.Context, id ID) (*User, error) {
 	return s.repo.Get(ctx, id)
 }
+
+func (s *UserService) Update(ctx context.Context, id ID, u *User) error {
+	return s.repo.Update(ctx, id, u)
+}

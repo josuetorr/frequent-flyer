@@ -13,11 +13,11 @@ type GetUserHandler struct {
 	userService UserService
 }
 
-func NewGetUserHandler(log *slog.Logger, service UserService) GetUserHandler {
-	return GetUserHandler{log: log, userService: service}
+func NewGetUserHandler(log *slog.Logger, service UserService) *GetUserHandler {
+	return &GetUserHandler{log: log, userService: service}
 }
 
-func (h GetUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
+func (h *GetUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	u, err := h.userService.Get(r.Context(), id)

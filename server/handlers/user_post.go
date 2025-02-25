@@ -12,11 +12,11 @@ type PostUserHandler struct {
 	userService UserService
 }
 
-func NewPostUserHandler(log *slog.Logger, service UserService) PostUserHandler {
-	return PostUserHandler{log: log, userService: service}
+func NewPostUserHandler(log *slog.Logger, service UserService) *PostUserHandler {
+	return &PostUserHandler{log: log, userService: service}
 }
 
-func (h PostUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *PostUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ct := r.Header.Get("Content-Type")
 	if ct != "application/json" {
 		http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
