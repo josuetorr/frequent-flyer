@@ -18,6 +18,8 @@ func Init(ctx context.Context) *DBPool {
 	dbName := os.Getenv("POSTGRES_DB_NAME")
 
 	connStr := fmt.Sprintf("postgres://%s:%s@localhost:%s/%s", user, psswrd, port, dbName)
+	os.Setenv("GOOSE_DBSTRING", connStr)
+
 	dbPool, err := pgxpool.New(ctx, connStr)
 	if err != nil {
 		log.Fatalf("Could not create connection pool to postgres... %s", err.Error())

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,12 +19,13 @@ import (
 func main() {
 	// TODO: call correct env file depending on env
 	godotenv.Load(".dev.env")
+	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
 
 	ctx := context.Background()
 	dbPool := data.Init(ctx)
 	defer dbPool.Close()
 
-	r := routes.RegisterRoutes()
+	r := routes.RegisterRoutes(log, dbPool)
 	port := "3000"
 
 	server := &http.Server{
