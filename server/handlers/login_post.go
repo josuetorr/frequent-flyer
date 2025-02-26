@@ -19,7 +19,7 @@ type LoginRequest struct {
 func Login(authService AuthService) ApiHandleFn {
 	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		var req LoginRequest
-		if err := utils.ParseJSON(r, req); err != nil {
+		if err := utils.ParseJSON(r, &req); err != nil {
 			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)
 		}
 

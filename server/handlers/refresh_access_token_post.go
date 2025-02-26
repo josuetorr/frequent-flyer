@@ -12,6 +12,10 @@ type RefreshAccessTokenRequest struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
+type RefreshAccessTokenResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
 func RefreshAccessToken() ApiHandleFn {
 	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		var req RefreshAccessTokenRequest
@@ -43,6 +47,6 @@ func RefreshAccessToken() ApiHandleFn {
 			return nil, utils.NewApiError(err, "Internal server error", http.StatusInternalServerError)
 		}
 
-		return utils.NewApiResponse(accessToken, http.StatusOK), nil
+		return utils.NewApiResponse(RefreshAccessTokenResponse{AccessToken: accessToken}, http.StatusOK), nil
 	}
 }
