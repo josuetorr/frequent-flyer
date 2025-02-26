@@ -33,6 +33,10 @@ func (fn ApiHandleFn[T]) ServeHTTP() http.HandlerFunc {
 			return
 		}
 
-		utils.WriteJSON(w, res.Status, res.Data)
+		if res != nil {
+			utils.WriteJSON(w, res.Status, res.Data)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
 	}
 }
