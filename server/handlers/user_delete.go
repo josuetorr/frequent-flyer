@@ -8,8 +8,8 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-func DeleteUser(userService UserService) ApiHandleFn[any] {
-	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
+func DeleteUser(userService UserService) ApiHandleFn {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		id := chi.URLParam(r, "id")
 		hard := strings.ToLower(r.URL.Query().Get("hard"))
 

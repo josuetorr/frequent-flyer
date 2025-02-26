@@ -3,9 +3,7 @@ package services
 import (
 	"context"
 	"errors"
-	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/josuetorr/frequent-flyer/server/utils"
 	"golang.org/x/crypto/bcrypt"
 )

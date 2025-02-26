@@ -7,8 +7,8 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-func UpdateUser(userService UserService) ApiHandleFn[any] {
-	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
+func UpdateUser(userService UserService) ApiHandleFn {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		id := chi.URLParam(r, "id")
 		var updatedUser User
 		if err := utils.ParseJSON(r, &updatedUser); err != nil {

@@ -26,10 +26,10 @@ type AuthService interface {
 	Signup(context.Context, *services.SignupRequest) (string, error)
 }
 
-type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
+type ApiHandleFn func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError)
 
 // ServeHTTP can take params a dependencies, such as other loggers
-func (fn ApiHandleFn[T]) ServeHTTP() http.HandlerFunc {
+func (fn ApiHandleFn) ServeHTTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := fn(w, r)
 		if err != nil {

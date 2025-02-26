@@ -11,8 +11,8 @@ type SignupResponse struct {
 	Token string `json:"token"`
 }
 
-func Signup(authService AuthService) ApiHandleFn[SignupResponse] {
-	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[SignupResponse], *utils.ApiError) {
+func Signup(authService AuthService) ApiHandleFn {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		var req services.SignupRequest
 		if err := utils.ParseJSON(r, &req); err != nil {
 			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)
