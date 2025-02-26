@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -24,25 +24,19 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		})
 
 		// TODO: add the authed user to request context
-		// TODO: clean this up
 		switch {
 		case token.Valid:
 			next.ServeHTTP(w, r)
-		case errors.Is(err, jwt.ErrTokenMalformed):
-			http.Error(w, fmt.Sprint("That's not even a token"), http.StatusUnauthorized)
 			return
-		case errors.Is(err, jwt.ErrTokenSignatureInvalid):
-			// Invalid signature
-			http.Error(w, fmt.Sprint("Invalid signature"), http.StatusUnauthorized)
-			return
-		case errors.Is(err, jwt.ErrTokenExpired) || errors.Is(err, jwt.ErrTokenNotValidYet):
-			// Token is either expired or not active yet
-			http.Error(w, fmt.Sprint("Timing is everything"), http.StatusUnauthorized)
-			return
+		case errors.Is(err, jwt.ErrTokenExpired):
+			// TODO: refresh toke;
+			slog.Error("Expired token: " + err.Error())
+		case errors.Is(err, jwt.ErrTokenNotValidYet):
+			slog.Error("Token not yet valid" + err.Error())
 		default:
-			http.Error(w, fmt.Sprint("Couldn't handle this token:"), http.StatusUnauthorized)
-			return
+			slog.Error("Invalid token: " + err.Error())
 		}
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	}
 	return http.HandlerFunc(fn)
 }
