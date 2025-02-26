@@ -8,13 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type SignupRequest struct {
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-}
-
 type AuthService struct {
 	userRepo UserRepository
 }
@@ -23,22 +16,20 @@ func NewAuthService(userRepo UserRepository) *AuthService {
 	return &AuthService{userRepo: userRepo}
 }
 
-func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (string, error) {
-	u, _ := s.userRepo.GetByEmail(ctx, req.Email)
+func (s *AuthService) Signup(ctx context.Context, email string, password string) (string, error) {
+	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
 		return "", errors.New("User already exists")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
 
 	user := &User{
-		Firstname: req.Firstname,
-		Lastname:  req.Lastname,
-		Email:     req.Lastname,
-		Password:  string(hash),
+		Email:    email,
+		Password: string(hash),
 	}
 
 	if err := s.userRepo.Insert(ctx, user); err != nil {
@@ -57,4 +48,8 @@ func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (string, e
 	}
 
 	return signedToken, nil
+}
+
+func (s *AuthService) Login(ctx context.Context, email string, password string) (string, string, error) {
+	panic("implment auth service login")
 }
