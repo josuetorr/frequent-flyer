@@ -6,13 +6,18 @@ import (
 )
 
 const (
-	createUserQuery        = "INSERT INTO users (firstname, lastname, email, verified, deleted_at, password) VALUES ($1, $2, $3, $4, $5, $6)"
+	createUserQuery        = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password, refresh_token) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 	selectUserByIdQuery    = "SELECT * FROM users WHERE id = $1"
 	selectUserByEmailQuery = "SELECT * FROM users WHERE email = $1"
 	updateUserQuery        = `
   UPDATE users
   SET firstname = $1, lastname = $2, email = $3, verified = $4
   WHERE id = $5
+  `
+	updateUserRefreshToken = `
+  UPDATE users
+  SET refresh_token = $1
+  WHERE id =$2
   `
 	deleteHardUserQuery = "DELETE FROM users WHERE id = $1"
 	deleteSoftUserQuery = `
@@ -31,7 +36,17 @@ func NewUserRepositor(db *DBPool) *UserRepository {
 }
 
 func (r *UserRepository) Insert(ctx context.Context, u *User) error {
-	_, err := r.db.Exec(ctx, createUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified, u.DeletedAt, u.Password)
+	_, err := r.db.Exec(
+		ctx,
+		createUserQuery,
+		u.Firstname,
+		u.Lastname,
+		u.Email,
+		u.DeletedAt,
+		u.Verified,
+		u.Password,
+		u.RefreshToken,
+	)
 	return err
 }
 
@@ -46,7 +61,7 @@ func (r *UserRepository) get(ctx context.Context, by string, value string) (*Use
 	}
 	row := r.db.QueryRow(ctx, q, value)
 	var u User
-	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt, &u.Password)
+	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt, &u.Password, &u.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -74,5 +89,10 @@ func (r *UserRepository) Delete(ctx context.Context, id ID, hard bool) error {
 		query = deleteSoftUserQuery
 	}
 	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
+func (r *UserRepository) UpdateRefreshToken(ctx context.Context, id ID, refreshToken string) error {
+	_, err := r.db.Exec(ctx, updateUserRefreshToken, refreshToken, id)
 	return err
 }

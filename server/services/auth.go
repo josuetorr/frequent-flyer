@@ -66,8 +66,13 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	if err != nil {
 		return "", "", err
 	}
+
 	refreshToken, err := utils.NewRefreshToken(u.ID)
 	if err != nil {
+		return "", "", err
+	}
+
+	if err := s.userRepo.UpdateRefreshToken(ctx, u.ID, refreshToken); err != nil {
 		return "", "", err
 	}
 

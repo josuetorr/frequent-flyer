@@ -13,5 +13,6 @@ type (
 	UserRepository interface {
 		data.Repository[User]
 		GetByEmail(context.Context, string) (*User, error)
+		UpdateRefreshToken(ctx context.Context, id string, refreshToken string) error
 	}
 )
