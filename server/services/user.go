@@ -33,3 +33,7 @@ func (s *UserService) Update(ctx context.Context, id ID, u *User) error {
 func (s *UserService) Delete(ctx context.Context, id ID, hard bool) error {
 	return s.repo.Delete(ctx, id, hard)
 }
+
+func (s *UserService) GetRefreshToken(ctx context.Context, id ID) (string, error) {
+	return s.repo.GetRefreshToken(ctx, id)
+}

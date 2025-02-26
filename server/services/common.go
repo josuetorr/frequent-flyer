@@ -14,5 +14,6 @@ type (
 		data.Repository[User]
 		GetByEmail(context.Context, string) (*User, error)
 		UpdateRefreshToken(ctx context.Context, id string, refreshToken string) error
+		GetRefreshToken(ctx context.Context, id ID) (string, error)
 	}
 )

@@ -16,7 +16,7 @@ type RefreshAccessTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-func RefreshAccessToken() ApiHandleFn {
+func RefreshAccessToken(userService UserService) ApiHandleFn {
 	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		var req RefreshAccessTokenRequest
 		if err := utils.ParseJSON(r, &req); err != nil {
@@ -40,6 +40,11 @@ func RefreshAccessToken() ApiHandleFn {
 		if !ok {
 			errMsg := "Invalid subject claim"
 			return nil, utils.NewApiError(errors.New(errMsg), errMsg, http.StatusUnauthorized)
+		}
+
+		storedRefreshToken, err := userService.GetRefreshToken(r.Context(), userId.(ID))
+		if err != nil || storedRefreshToken != req.RefreshToken {
+			return nil, utils.NewApiError(err, "Invalid refresh token", http.StatusUnauthorized)
 		}
 
 		accessToken, err := utils.NewAccessToken(userId.(ID))

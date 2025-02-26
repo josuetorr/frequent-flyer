@@ -19,6 +19,7 @@ type UserService interface {
 	GetById(context.Context, ID) (*User, error)
 	Update(context.Context, ID, *User) error
 	Delete(context.Context, ID, bool) error
+	GetRefreshToken(context.Context, ID) (string, error)
 }
 
 type AuthService interface {

@@ -6,10 +6,11 @@ import (
 )
 
 const (
-	createUserQuery        = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password, refresh_token) VALUES ($1, $2, $3, $4, $5, $6, $7)"
-	selectUserByIdQuery    = "SELECT * FROM users WHERE id = $1"
-	selectUserByEmailQuery = "SELECT * FROM users WHERE email = $1"
-	updateUserQuery        = `
+	createUserQuery         = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password, refresh_token) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	selectUserByIdQuery     = "SELECT * FROM users WHERE id = $1"
+	selectUserByEmailQuery  = "SELECT * FROM users WHERE email = $1"
+	selectRefreshTokenQuery = "SELECT refresh_token FROM users WHERE id = $1"
+	updateUserQuery         = `
   UPDATE users
   SET firstname = $1, lastname = $2, email = $3, verified = $4
   WHERE id = $5
@@ -95,4 +96,13 @@ func (r *UserRepository) Delete(ctx context.Context, id ID, hard bool) error {
 func (r *UserRepository) UpdateRefreshToken(ctx context.Context, id ID, refreshToken string) error {
 	_, err := r.db.Exec(ctx, updateUserRefreshToken, refreshToken, id)
 	return err
+}
+
+func (r *UserRepository) GetRefreshToken(ctx context.Context, id ID) (string, error) {
+	row := r.db.QueryRow(ctx, selectRefreshTokenQuery, id)
+	var refreshToken string
+	if err := row.Scan(&refreshToken); err != nil {
+		return "", err
+	}
+	return refreshToken, nil
 }
