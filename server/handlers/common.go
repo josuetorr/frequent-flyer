@@ -16,7 +16,7 @@ type (
 
 type UserService interface {
 	Insert(context.Context, *models.User) error
-	Get(context.Context, ID) (*User, error)
+	GetById(context.Context, ID) (*User, error)
 	Update(context.Context, ID, *User) error
 	Delete(context.Context, ID, bool) error
 }

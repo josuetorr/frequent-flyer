@@ -18,8 +18,12 @@ func (s *UserService) Insert(ctx context.Context, user *models.User) error {
 	return s.repo.Insert(ctx, user)
 }
 
-func (s *UserService) Get(ctx context.Context, id ID) (*User, error) {
-	return s.repo.Get(ctx, id)
+func (s *UserService) GetById(ctx context.Context, id ID) (*User, error) {
+	return s.repo.GetById(ctx, id)
+}
+
+func (s *UserService) GetByEmail(ctx context.Context, id ID) (*User, error) {
+	return s.repo.GetByEmail(ctx, id)
 }
 
 func (s *UserService) Update(ctx context.Context, id ID, u *User) error {
