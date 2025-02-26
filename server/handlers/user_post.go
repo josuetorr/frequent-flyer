@@ -1,42 +1,32 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
-	"log/slog"
+	"errors"
 	"net/http"
+
+	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-type PostUserHandler struct {
-	log         *slog.Logger
-	userService UserService
-}
+func CreateUser(userService UserService) ApiHandleFn[any] {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
+		ct := r.Header.Get("Content-Type")
+		if ct != "application/json" {
+			http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
+			return nil, utils.NewApiError(
+				errors.New("Unsupported Media Type"), "Unsupported Media Type", http.StatusUnsupportedMediaType)
+		}
+		defer r.Body.Close()
 
-func NewPostUserHandler(log *slog.Logger, service UserService) *PostUserHandler {
-	return &PostUserHandler{log: log, userService: service}
-}
+		var u User
+		if err := utils.ParseJSON(r, &u); err != nil {
+			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)
+		}
 
-func (h *PostUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	ct := r.Header.Get("Content-Type")
-	if ct != "application/json" {
-		http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
-		return
+		err := userService.Insert(r.Context(), &u)
+		if err != nil {
+			return nil, utils.NewApiError(err, "Internal server error", http.StatusInternalServerError)
+		}
+
+		return nil, nil
 	}
-	defer r.Body.Close()
-
-	var u User
-	if err := json.NewDecoder(r.Body).Decode(&u); err != nil {
-		http.Error(w, "Invalid payload", http.StatusBadRequest)
-		return
-	}
-
-	fmt.Printf("user: %+v\n", u)
-	err := h.userService.Insert(r.Context(), &u)
-	if err != nil {
-		h.log.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
 }

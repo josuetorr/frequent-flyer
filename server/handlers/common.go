@@ -2,8 +2,11 @@ package handlers
 
 import (
 	"context"
+	"log/slog"
+	"net/http"
 
 	"github.com/josuetorr/frequent-flyer/server/models"
+	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
 type (
@@ -16,4 +19,25 @@ type UserService interface {
 	Get(context.Context, ID) (*User, error)
 	Update(context.Context, ID, *User) error
 	Delete(context.Context, ID, bool) error
+}
+
+type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
+
+// ServeHTTP can take params a dependencies, such as other loggers
+func (fn ApiHandleFn[T]) ServeHTTP() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		res, err := fn(w, r)
+		if err != nil {
+			// using default logger
+			slog.Error(err.Error.Error())
+			utils.WriteError(w, err)
+			return
+		}
+
+		if res != nil {
+			utils.WriteJSON(w, res.Status, res.Data)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+	}
 }

@@ -1,31 +1,22 @@
 package handlers
 
 import (
-	"log/slog"
 	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi"
+	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-type DeleteUserHandler struct {
-	log         *slog.Logger
-	userService UserService
-}
+func DeleteUser(userService UserService) ApiHandleFn[any] {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
+		id := chi.URLParam(r, "id")
+		hard := strings.ToLower(r.URL.Query().Get("hard"))
 
-func NewDeleteUserHanlder(log *slog.Logger, service UserService) *DeleteUserHandler {
-	return &DeleteUserHandler{log: log, userService: service}
-}
+		if err := userService.Delete(r.Context(), id, hard == "true"); err != nil {
+			return nil, utils.NewApiError(err, "Internal server error", http.StatusInternalServerError)
+		}
 
-func (h *DeleteUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	hard := strings.ToLower(r.URL.Query().Get("hard"))
-
-	if err := h.userService.Delete(r.Context(), id, hard == "true"); err != nil {
-		h.log.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
+		return nil, nil
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
