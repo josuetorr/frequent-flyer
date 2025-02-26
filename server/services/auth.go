@@ -52,7 +52,7 @@ func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (string, e
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": "frequent-flyer",
+		"iss": utils.GetAppName(),
 		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
