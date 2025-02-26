@@ -23,6 +23,7 @@ type UserService interface {
 
 type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
 
+// ServeHTTP can take params a dependencies, such as other loggers
 func (fn ApiHandleFn[T]) ServeHTTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := fn(w, r)
