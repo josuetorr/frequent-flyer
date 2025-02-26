@@ -51,13 +51,9 @@ func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (string, e
 	if err != nil {
 		return "", err
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": utils.GetAppName(),
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
 
-	signedToken, err := token.SignedString([]byte(utils.GetJWTSecret()))
+	token := utils.NewJwtToken(user.ID)
+	signedToken, err := utils.SignToken(token)
 	if err != nil {
 		return "", err
 	}
