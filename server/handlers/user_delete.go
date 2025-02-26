@@ -17,7 +17,7 @@ func NewDeleteUserHanlder(log *slog.Logger, service UserService) *DeleteUserHand
 	return &DeleteUserHandler{log: log, userService: service}
 }
 
-func (h *DeleteUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
+func (h *DeleteUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	hard := strings.ToLower(r.URL.Query().Get("hard"))
 

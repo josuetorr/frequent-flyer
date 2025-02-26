@@ -16,9 +16,9 @@ func NewUserRoutes(log *slog.Logger, db *data.DBPool) chi.Router {
 	userService := services.NewUserService(userRepo)
 
 	r.Post("/", handlers.NewPostUserHandler(log, userService).ServeHTTP)
-	r.Get("/{id}", handlers.NewGetUserHandler(log, userService).ServeHttp)
-	r.Put("/{id}", handlers.NewPutUserHanlder(log, userService).ServeHttp)
-	r.Delete("/{id}", handlers.NewDeleteUserHanlder(log, userService).ServeHttp)
+	r.Get("/{id}", handlers.GetUser(userService).ServeHTTP())
+	r.Put("/{id}", handlers.NewPutUserHanlder(log, userService).ServeHTTP)
+	r.Delete("/{id}", handlers.NewDeleteUserHanlder(log, userService).ServeHTTP)
 
 	return r
 }

@@ -1,32 +1,21 @@
 package handlers
 
 import (
-	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-type GetUserHandler struct {
-	log         *slog.Logger
-	userService UserService
-}
+func GetUser(userService UserService) ApiHandleFn[User] {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[User], *utils.ApiError) {
+		id := chi.URLParam(r, "id")
 
-func NewGetUserHandler(log *slog.Logger, service UserService) *GetUserHandler {
-	return &GetUserHandler{log: log, userService: service}
-}
+		u, err := userService.Get(r.Context(), id)
+		if err != nil {
+			return nil, utils.NewApiError(err, "Resource not found", http.StatusNotFound)
+		}
 
-func (h *GetUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-
-	u, err := h.userService.Get(r.Context(), id)
-	if err != nil {
-		h.log.Error(err.Error())
-		http.Error(w, "Resource not found", http.StatusNotFound)
-		return
+		return utils.NewApiResponse(u, int(http.StatusOK)), nil
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(&u)
 }

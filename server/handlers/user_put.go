@@ -17,7 +17,7 @@ func NewPutUserHanlder(log *slog.Logger, service UserService) *PutUserHandler {
 	return &PutUserHandler{log: log, userService: service}
 }
 
-func (h *PutUserHandler) ServeHttp(w http.ResponseWriter, r *http.Request) {
+func (h *PutUserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ct := r.Header.Get("Content-Type")
 	if ct != "application/json" {
 		http.Error(w, "Unsupported Media Type", http.StatusUnsupportedMediaType)
