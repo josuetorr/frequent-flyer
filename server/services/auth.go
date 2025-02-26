@@ -41,8 +41,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		return "", err
 	}
 
-	token := utils.NewJwtToken(user.ID)
-	signedToken, err := utils.SignToken(token)
+	signedToken, err := utils.NewAccessToken(user.ID)
 	if err != nil {
 		return "", err
 	}
@@ -51,5 +50,13 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 }
 
 func (s *AuthService) Login(ctx context.Context, email string, password string) (string, string, error) {
+	u, err := s.userRepo.GetByEmail(ctx, email)
+	if err != nil {
+		return "", "", errors.New("Invalid credentials")
+	}
+
+	if err := utils.ComparePassword(u.Password, password); err != nil {
+		return "", "", errors.New("Invalid credentials")
+	}
 	panic("implment auth service login")
 }

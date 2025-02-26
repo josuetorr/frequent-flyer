@@ -2,8 +2,12 @@ package utils
 
 import "os"
 
-func GetJWTSecret() string {
-	return os.Getenv("JWT_SECRET")
+func GetJwtAccessSecret() string {
+	return os.Getenv("JWT_ACCESS_SECRET")
+}
+
+func GetJwtRefreshSecret() string {
+	return os.Getenv("JWT_REFRESH_SECRET")
 }
 
 func GetAppName() string {

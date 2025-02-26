@@ -20,7 +20,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return []byte(utils.GetJWTSecret()), nil
+			return []byte(utils.GetJwtAccessSecret()), nil
 		})
 
 		// TODO: add the authed user to request context
