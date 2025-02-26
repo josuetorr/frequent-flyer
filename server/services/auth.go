@@ -1,9 +1,11 @@
 package services
 
-type AuthService struct{}
+type AuthService struct {
+	userRepo UserRepository
+}
 
-func NewAuthService() *AuthService {
-	return &AuthService{}
+func NewAuthService(userRepo UserRepository) *AuthService {
+	return &AuthService{userRepo: userRepo}
 }
 
 func (s *AuthService) Signup(email string, password string) error {
