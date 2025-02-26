@@ -58,5 +58,15 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	if err := utils.ComparePassword(u.Password, password); err != nil {
 		return "", "", errors.New("Invalid credentials")
 	}
-	panic("implment auth service login")
+
+	accessToken, err := utils.NewAccessToken(u.ID)
+	if err != nil {
+		return "", "", err
+	}
+	refreshToken, err := utils.NewRefreshToken(u.ID)
+	if err != nil {
+		return "", "", err
+	}
+
+	return accessToken, refreshToken, nil
 }
