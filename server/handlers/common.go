@@ -21,6 +21,10 @@ type UserService interface {
 	Delete(context.Context, ID, bool) error
 }
 
+type AuthService interface {
+	Signup(email string, password string) error
+}
+
 type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
 
 // ServeHTTP can take params a dependencies, such as other loggers
