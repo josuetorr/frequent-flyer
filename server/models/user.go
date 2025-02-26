@@ -11,4 +11,5 @@ type User struct {
 	Email     string     `json:"email"`
 	DeletedAt *time.Time `json:"deleted_at"`
 	Verified  bool       `json:"verified"`
+	Password  string     `json:"-"`
 }
