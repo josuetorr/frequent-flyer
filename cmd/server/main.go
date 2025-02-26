@@ -20,6 +20,7 @@ func main() {
 	// TODO: call correct env file depending on env
 	godotenv.Load(".dev.env")
 	log := slog.New(slog.NewJSONHandler(os.Stdin, nil))
+	slog.SetDefault(log)
 
 	ctx := context.Background()
 	dbPool := data.Init(ctx)
