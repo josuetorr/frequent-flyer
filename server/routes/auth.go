@@ -12,6 +12,8 @@ func NewAuthRoutes(userRepo services.UserRepository) chi.Router {
 	authService := services.NewAuthService(userRepo)
 
 	r.Post("/signup", handlers.Signup(authService).ServeHTTP())
+	r.Post("/login", handlers.Login(authService).ServeHTTP())
+	r.Post("/refresh", handlers.RefreshAccessToken().ServeHTTP())
 
 	return r
 }
