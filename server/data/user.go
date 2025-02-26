@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	createUserQuery        = "INSERT INTO users (firstname, lastname, email, verified, deleted_at) VALUES ($1, $2, $3, $4, $5)"
+	createUserQuery        = "INSERT INTO users (firstname, lastname, email, verified, deleted_at, password) VALUES ($1, $2, $3, $4, $5, $6)"
 	selectUserByIdQuery    = "SELECT * FROM users WHERE id = $1"
 	selectUserByEmailQuery = "SELECT * FROM users WHERE email = $1"
 	updateUserQuery        = `
@@ -31,7 +31,7 @@ func NewUserRepositor(db *DBPool) *UserRepository {
 }
 
 func (r *UserRepository) Insert(ctx context.Context, u *User) error {
-	_, err := r.db.Exec(ctx, createUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified)
+	_, err := r.db.Exec(ctx, createUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified, u.DeletedAt, u.Password)
 	return err
 }
 
@@ -46,7 +46,7 @@ func (r *UserRepository) get(ctx context.Context, by string, value string) (*Use
 	}
 	row := r.db.QueryRow(ctx, q, value)
 	var u User
-	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt)
+	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt, &u.Password)
 	if err != nil {
 		return nil, err
 	}

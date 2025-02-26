@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/josuetorr/frequent-flyer/server/models"
+	"github.com/josuetorr/frequent-flyer/server/services"
 	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
@@ -22,7 +23,7 @@ type UserService interface {
 }
 
 type AuthService interface {
-	Signup(email string, password string) error
+	Signup(context.Context, *services.SignupRequest) (string, error)
 }
 
 type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
