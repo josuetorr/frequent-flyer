@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
 func AuthMiddleware(next http.Handler) http.Handler {
@@ -19,9 +20,10 @@ func AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-			return []byte("some-secret"), nil
+			return []byte(utils.GetJWTSecret()), nil
 		})
 
+		// TODO: add the authed user to request context
 		// TODO: clean this up
 		switch {
 		case token.Valid:

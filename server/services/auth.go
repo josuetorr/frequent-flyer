@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/josuetorr/frequent-flyer/server/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -51,12 +52,12 @@ func (s *AuthService) Signup(ctx context.Context, req *SignupRequest) (string, e
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Hour * 24).Unix(),
+		"iss": "frequent-flyer",
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	// TODO: hide secret
-	signedToken, err := token.SignedString([]byte("some-secret"))
+	signedToken, err := token.SignedString([]byte(utils.GetJWTSecret()))
 	if err != nil {
 		return "", err
 	}
