@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -10,12 +9,6 @@ import (
 
 func UpdateUser(userService UserService) ApiHandleFn[any] {
 	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
-		ct := r.Header.Get("Content-Type")
-		if ct != "application/json" {
-			return nil, utils.NewApiError(
-				errors.New("Unsupported Media Type"), "Unsupported Media Type", http.StatusUnsupportedMediaType)
-		}
-
 		id := chi.URLParam(r, "id")
 		var updatedUser User
 		if err := utils.ParseJSON(r, &updatedUser); err != nil {
