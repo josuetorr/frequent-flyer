@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/go-chi/chi"
-	"github.com/josuetorr/frequent-flyer/server/handlers"
+	"github.com/josuetorr/frequent-flyer/server/handlers/api"
 )
 
 func NewUserRoutes(userService handlers.UserService) chi.Router {

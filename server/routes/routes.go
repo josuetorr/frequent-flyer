@@ -30,5 +30,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		})
 	})
 
+	// r.Get("/login", NewLoginPageHandler())
+
 	return r
 }
