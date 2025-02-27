@@ -1,10 +1,14 @@
-.PHONY: web-dev
-web-dev:
-	cd web && pnpm run dev
+.PHONE: tw-build
+tw-build:
+	pnpm run tw:build
+
+.PHONE: tw-watch
+tw-watch:
+	pnpm run tw:watch
 
 .PHONY: server-dev
 server-dev:
-	cd backend && go build -o ./tmp/main ./cmd/server/main.go && air
+	go build -o ./tmp/main ./cmd/server/main.go && air
 
 .PHONY: docker-dev
 docker-dev:
