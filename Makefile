@@ -1,10 +1,10 @@
 .PHONY: tailwind-watch
 tailwind-watch:
-	tailwindcss -i ./assets/style/input.css -o ./assets/style/style.css --watch
+	pnpm run tw:watch
 
 .PHONY: tailwind-build
 tailwind-build:
-	tailwindcss -i ./assets/style/input.css -o ./assets/style/style.min.css --minify
+	pnpm run tw:build
 
 .PHONY: templ-watch
 templ-watch:

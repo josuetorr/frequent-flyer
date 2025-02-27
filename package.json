@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tw:watch":"tailwindcss -i ./assets/style/input.css -o ./assets/style/style.css --watch",
+    "tw:build":"tailwindcss -i ./assets/style/input.css -o ./assets/style/style.min.css --minify"
   },
   "keywords": [],
   "author": "",
