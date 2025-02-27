@@ -1,3 +1,6 @@
 *.env
 !.template.env
-/tmp
+tmp/
+
+node_modules/
+
