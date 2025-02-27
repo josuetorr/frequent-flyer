@@ -16,7 +16,9 @@ templ-generate:
 
 .PHONY: dev
 dev:
-	go build -o ./tmp/main ./cmd/server/main.go && air
+	go build -o ./tmp/main ./cmd/server/main.go && \
+	(make templ-watch & make tailwind-watch &) && \
+	air
 
 .PHONY: docker-up
 docker-up:
