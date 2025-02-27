@@ -29,7 +29,7 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html data-theme=\"retro\"><head><link rel=\"stylesheet\" href=\"public/styles/style.css\"></head><body><div class=\"h-screen flex justify-center items-center\"><form class=\"flex justify-center items-center card bg-base-200 w-96 shadow-sm gap-2 p-2\"><h2>Frequent Flyers</h2><label class=\"input\"><input type=\"text\" name=\"email\" placeholder=\"email\"></label> <label class=\"input\"><input type=\"password\" name=\"password\" placeholder=\"password\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">login</button></div><p>don't have an account? <a class=\"link-accent\" href=\"/signup\">Signup</a></p></form></div></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html data-theme=\"retro\"><head><link rel=\"stylesheet\" href=\"public/styles/style.css\"><script src=\"public/js/htmx.js\" defer></script></head><body><div class=\"h-screen flex justify-center items-center\"><form class=\"flex justify-center items-center card bg-base-200 w-96 shadow-sm gap-2 p-2\"><h2>Frequent Flyers</h2><label class=\"input\"><input type=\"text\" name=\"email\" placeholder=\"email\"></label> <label class=\"input\"><input type=\"password\" name=\"password\" placeholder=\"password\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">login</button></div><p>don't have an account? <a class=\"link-accent\" href=\"/signup\">Signup</a></p></form></div></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

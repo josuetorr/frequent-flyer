@@ -3,4 +3,6 @@
 tmp/
 
 node_modules/
-web/templates/**/*.txt
+
+# generate by templ when watching
+web/templates/**/*_templ.txt
