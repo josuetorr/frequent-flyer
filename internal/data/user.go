@@ -32,7 +32,7 @@ type UserRepository struct {
 	db *DBPool
 }
 
-func NewUserRepositor(db *DBPool) *UserRepository {
+func NewUserRepository(db *DBPool) *UserRepository {
 	return &UserRepository{db: db}
 }
 

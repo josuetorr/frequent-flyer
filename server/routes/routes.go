@@ -13,7 +13,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	r := chi.NewRouter()
 	r.Use(cm.Logger)
 
-	userRepo := data.NewUserRepositor(db)
+	userRepo := data.NewUserRepository(db)
 	userService := services.NewUserService(userRepo)
 	authService := services.NewAuthService(userRepo)
 
