@@ -16,9 +16,11 @@ templ-generate:
 
 .PHONY: server-dev
 server-dev:
-	$(MAKE) tw-watch &
-	$(MAKE) templ-watch &
 	go build -o ./tmp/main ./cmd/server/main.go && air
+
+.PHONY: dev
+dev:
+	make -j 3 tw-watch templ-watch server-dev
 
 .PHONY: docker-dev
 docker-dev:
