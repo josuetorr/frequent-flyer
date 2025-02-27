@@ -1,6 +1,0 @@
-*.env
-!.template.env
-tmp/
-
-node_modules/
-
