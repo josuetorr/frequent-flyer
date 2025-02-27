@@ -10,6 +10,7 @@ func RegisterPagesRoutes() chi.Router {
 
 	r.Get("/login", pages.NewLoginPageHandler().ServeHTTP)
 	r.Get("/signup", pages.NewSignupPageHandler().ServeHTTP)
+	r.Get("/home", pages.NewHomePageHandler().ServeHTTP)
 
 	return r
 }

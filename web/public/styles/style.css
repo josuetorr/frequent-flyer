@@ -1195,6 +1195,9 @@
       }
     }
   }
+  .z-61 {
+    z-index: 61;
+  }
   .filter {
     display: flex;
     flex-wrap: wrap;

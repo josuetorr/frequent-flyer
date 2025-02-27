@@ -3,7 +3,7 @@ package pages
 import (
 	"net/http"
 
-	"github.com/josuetorr/frequent-flyer/web/templates"
+	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
 type SignupPageHandler struct{}
