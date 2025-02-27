@@ -2,7 +2,8 @@ package pages
 
 import (
 	"net/http"
-	// "github.com/josuetorr/web/templates"
+
+	"github.com/josuetorr/frequent-flyer/web/templates"
 )
 
 type LoginPageHandler struct{}
@@ -12,5 +13,5 @@ func NewLoginPageHandler() *LoginPageHandler {
 }
 
 func (h *LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// t := templates
+	templates.Login().Render(r.Context(), w)
 }

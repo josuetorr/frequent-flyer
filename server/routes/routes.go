@@ -6,6 +6,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/data"
 	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/server/routes/api"
+	"github.com/josuetorr/frequent-flyer/server/routes/pages"
 )
 
 func RegisterRoutes(db *data.DBPool) chi.Router {
@@ -17,6 +18,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	authService := services.NewAuthService(userRepo)
 
 	r.Mount("/api/v1", api.RegisterApiRoutes(authService, userService))
+	r.Mount("/", pages.RegisterPagesRoutes())
 
 	return r
 }
