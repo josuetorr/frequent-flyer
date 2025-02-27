@@ -888,6 +888,9 @@
       }
     }
   }
+  .fixed {
+    position: fixed;
+  }
   .textarea {
     border: var(--border) solid #0000;
     min-height: calc(0.25rem * 20);
