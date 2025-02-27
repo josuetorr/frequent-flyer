@@ -1,0 +1,17 @@
+{
+  "name": "frequent-flyer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.9",
+    "daisyui": "5.0.0-beta.9",
+    "tailwindcss": "^4.0.9"
+  }
+}
