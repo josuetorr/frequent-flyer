@@ -5,12 +5,12 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/handlers/api"
 )
 
-func NewAuthRoutes(authService handlers.AuthService, userService handlers.UserService) chi.Router {
+func NewAuthRoutes(authService api.AuthService, userService api.UserService) chi.Router {
 	r := chi.NewRouter()
 
-	r.Post("/signup", handlers.Signup(authService).ServeHTTP())
-	r.Post("/login", handlers.Login(authService).ServeHTTP())
-	r.Post("/refresh", handlers.RefreshAccessToken(userService).ServeHTTP())
+	r.Post("/signup", api.Signup(authService).ServeHTTP())
+	r.Post("/login", api.Login(authService).ServeHTTP())
+	r.Post("/refresh", api.RefreshAccessToken(userService).ServeHTTP())
 
 	return r
 }
