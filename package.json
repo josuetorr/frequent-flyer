@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "tw:build":"tailwindcss -i ./web/style/app.css -o ./web/style/style.min.css --minify",
-    "tw:watch":"tailwindcss -i ./web/style/app.css -o ./web/style/style.css --watch"
+    "tw:build":"tailwindcss -i ./web/public/styles/app.css -o ./web/public/styles/style.min.css --minify",
+    "tw:watch":"tailwindcss -i ./web/public/styles/app.css -o ./web/public/styles/style.css --watch"
   },
   "keywords": [],
   "author": "",
