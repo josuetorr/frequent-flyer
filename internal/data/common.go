@@ -7,8 +7,9 @@ import (
 )
 
 type (
-	ID   = models.ID
-	User = models.User
+	ID      = models.ID
+	User    = models.User
+	Session = models.Session
 )
 
 type Repository[T any] interface {
