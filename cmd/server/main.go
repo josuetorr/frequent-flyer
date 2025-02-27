@@ -27,6 +27,10 @@ func main() {
 	defer dbPool.Close()
 
 	r := routes.RegisterRoutes(dbPool)
+
+	fs := http.FileServer(http.Dir("web/public"))
+	r.Handle("/public/*", http.StripPrefix("/public/", fs))
+
 	port := "3000"
 
 	server := &http.Server{
