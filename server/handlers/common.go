@@ -16,15 +16,21 @@ type (
 
 type UserService interface {
 	Insert(context.Context, *models.User) error
-	Get(context.Context, ID) (*User, error)
+	GetById(context.Context, ID) (*User, error)
 	Update(context.Context, ID, *User) error
 	Delete(context.Context, ID, bool) error
+	GetRefreshToken(context.Context, ID) (string, error)
 }
 
-type ApiHandleFn[T any] func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[T], *utils.ApiError)
+type AuthService interface {
+	Signup(ctx context.Context, email string, password string) (string, error)
+	Login(ctx context.Context, email string, password string) (string, string, error)
+}
+
+type ApiHandleFn func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError)
 
 // ServeHTTP can take params a dependencies, such as other loggers
-func (fn ApiHandleFn[T]) ServeHTTP() http.HandlerFunc {
+func (fn ApiHandleFn) ServeHTTP() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := fn(w, r)
 		if err != nil {

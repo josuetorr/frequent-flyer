@@ -6,8 +6,8 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/utils"
 )
 
-func CreateUser(userService UserService) ApiHandleFn[any] {
-	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse[any], *utils.ApiError) {
+func CreateUser(userService UserService) ApiHandleFn {
+	return func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError) {
 		var u User
 		if err := utils.ParseJSON(r, &u); err != nil {
 			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)

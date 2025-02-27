@@ -13,7 +13,7 @@ type (
 
 type Repository[T any] interface {
 	Insert(context.Context, *T) error
-	Get(context.Context, ID) (*T, error)
+	GetById(context.Context, ID) (*T, error)
 	Update(context.Context, ID, *T) error
 	Delete(context.Context, ID, bool) error
 }

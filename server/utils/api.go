@@ -12,8 +12,8 @@ type ApiError struct {
 	Status  int
 }
 
-type ApiResponse[T any] struct {
-	Data   *T
+type ApiResponse struct {
+	Data   any
 	Status int
 }
 
@@ -21,8 +21,8 @@ func NewApiError(err error, message string, status int) *ApiError {
 	return &ApiError{Error: err, Message: message, Status: status}
 }
 
-func NewApiResponse[T any](v *T, status int) *ApiResponse[T] {
-	return &ApiResponse[T]{Data: v, Status: status}
+func NewApiResponse(v any, status int) *ApiResponse {
+	return &ApiResponse{Data: v, Status: status}
 }
 
 const ContentTypeJSON = "application/json"
