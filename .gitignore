@@ -3,4 +3,4 @@
 tmp/
 
 node_modules/
-
+web/templates/**/*.txt
