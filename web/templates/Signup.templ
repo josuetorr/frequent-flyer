@@ -1,6 +1,6 @@
 package templates
 
-templ Login() {
+templ Signup() {
 	<!DOCTYPE html>
 	<html data-theme="retro">
 		<head>
@@ -16,11 +16,14 @@ templ Login() {
 					<label class="input">
 						<input type="password" name="password" placeholder="password"/>
 					</label>
+					<label class="input">
+						<input type="password" name="password-confirm" placeholder="confirm password"/>
+					</label>
 					<div class="card-actions">
 						<button type="submit" class="btn bg-base-100">login</button>
 					</div>
 					<p>
-						don't have an account? <a class="link-accent" href="/signup">Signup</a>
+						already have an account? <a class="link-accent" href="/login">Login</a>
 					</p>
 				</form>
 			</div>
