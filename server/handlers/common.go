@@ -11,3 +11,7 @@ type AuthService interface {
 	Login(ctx context.Context, email string, password string) (*models.Session, error)
 	Logout(ctx context.Context, token models.SessionToken) error
 }
+
+type SessionService interface {
+	GetByToken(ctx context.Context, token models.SessionToken) (*models.Session, error)
+}

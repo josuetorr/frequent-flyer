@@ -2,11 +2,11 @@ package utils
 
 import "net/http"
 
-const sessionCookieName = "session_cookie"
+const SessionCookieName = "session_cookie"
 
 func SetCookie(w http.ResponseWriter, value string, path string, age int) {
 	http.SetCookie(w, &http.Cookie{
-		Name:  sessionCookieName,
+		Name:  SessionCookieName,
 		Value: value,
 		// HttpOnly: true,
 		// Secure:   true,
@@ -17,7 +17,7 @@ func SetCookie(w http.ResponseWriter, value string, path string, age int) {
 
 func InvalidateCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
-		Name:  sessionCookieName,
+		Name:  SessionCookieName,
 		Value: "",
 		// HttpOnly: true,
 		// Secure:   true,

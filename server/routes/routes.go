@@ -7,6 +7,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"github.com/josuetorr/frequent-flyer/server/handlers/pages"
+	"github.com/josuetorr/frequent-flyer/server/internal/middleware"
 )
 
 func RegisterRoutes(db *data.DBPool) chi.Router {
@@ -17,6 +18,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	sessionRepo := data.NewSessionRepository(db)
 
 	authService := services.NewAuthService(userRepo, sessionRepo)
+	sessionService := services.NewSessionService(sessionRepo)
 
 	r.Method("GET", "/login", pages.NewLoginPageHandler())
 	r.Method("POST", "/login", forms.NewLoginHandler(authService))
@@ -24,9 +26,11 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	r.Method("GET", "/signup", pages.NewSignupPageHandler())
 	r.Method("POST", "/signup", forms.NewSignupHandler(authService))
 
-	r.Method("POST", "/logout", forms.NewLogoutHandler(authService))
-
-	r.Method("GET", "/home", pages.NewHomePageHandler())
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.AuthMiddlerware(sessionService))
+		r.Method("GET", "/home", pages.NewHomePageHandler())
+		r.Method("POST", "/logout", forms.NewLogoutHandler(authService))
+	})
 
 	return r
 }
