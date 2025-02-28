@@ -7,6 +7,6 @@ import (
 )
 
 type AuthService interface {
-	Signup(ctx context.Context, email string, password string) (models.ID, error)
-	Login(ctx context.Context, email string, password string) (models.ID, error)
+	Signup(ctx context.Context, email string, password string) (models.SessionToken, error)
+	Login(ctx context.Context, email string, password string) (models.SessionToken, error)
 }

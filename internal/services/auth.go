@@ -48,7 +48,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 	return user.ID, nil
 }
 
-func (s *AuthService) Login(ctx context.Context, email string, password string) (models.ID, error) {
+func (s *AuthService) Login(ctx context.Context, email string, password string) (models.SessionToken, error) {
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
@@ -61,8 +61,14 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	}
 
 	weekDuration := time.Hour * 24 * 7
+	token, err := utils.GenerateRandomToken()
+	if err != nil {
+		return "", err
+	}
+
 	session := &models.Session{
 		UserID:    u.ID,
+		Token:     token,
 		CreatedAt: time.Now().UTC(),
 		ExpiresIn: weekDuration,
 	}
@@ -71,10 +77,5 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 		return "", err
 	}
 
-	session, err = s.sessionRepo.GetByUserId(ctx, u.ID)
-	if err != nil {
-		return "", err
-	}
-
-	return session.ID, nil
+	return session.Token, nil
 }
