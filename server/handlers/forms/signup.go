@@ -40,13 +40,12 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionToken, err := h.authService.Signup(r.Context(), email, password)
+	_, err := h.authService.Signup(r.Context(), email, password)
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	println("session token: ", sessionToken)
 	w.WriteHeader(http.StatusCreated)
 }

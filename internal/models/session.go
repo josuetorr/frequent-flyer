@@ -15,5 +15,5 @@ type Session struct {
 }
 
 func (s Session) Lifetime() int {
-	return s.ExpiresAt.Compare(s.CreatedAt)
+	return int(s.ExpiresAt.Sub(s.CreatedAt).Seconds())
 }

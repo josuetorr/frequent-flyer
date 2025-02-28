@@ -1066,9 +1066,6 @@
       }
     }
   }
-  .fixed {
-    position: fixed;
-  }
   .relative {
     position: relative;
   }
@@ -1449,11 +1446,11 @@
   .table {
     display: table;
   }
-  .h-8 {
-    height: calc(var(--spacing) * 8);
-  }
   .h-screen {
     height: 100vh;
+  }
+  .w-8 {
+    width: calc(var(--spacing) * 8);
   }
   .w-96 {
     width: calc(var(--spacing) * 96);
@@ -1496,6 +1493,9 @@
   }
   .p-2 {
     padding: calc(var(--spacing) * 2);
+  }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
   }
   .link-accent {
     color: var(--color-accent);
