@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -20,7 +19,7 @@ func AuthMiddlerware(sessionService handlers.SessionService) Middleware {
 			sessionCookie, err := r.Cookie(utils.SessionCookieName)
 			if err != nil {
 				slog.Error(err.Error())
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
 
@@ -28,7 +27,7 @@ func AuthMiddlerware(sessionService handlers.SessionService) Middleware {
 			s, err := sessionService.GetByToken(rCtx, sessionCookie.Value)
 			if err != nil {
 				slog.Error(err.Error())
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				http.Redirect(w, r, "/login", http.StatusFound)
 				return
 			}
 
@@ -60,7 +59,7 @@ func RedirectIfLogged(sessionService handlers.SessionService) Middleware {
 				return
 			}
 
-			w.Header().Set("HX-REDIRECT", "/home")
+			http.Redirect(w, r, "/home", http.StatusFound)
 		}
 		return http.HandlerFunc(fn)
 	}

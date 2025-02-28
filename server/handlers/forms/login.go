@@ -42,7 +42,7 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SetCookie(w, session.Token, "/home", session.Lifetime())
+	utils.SetCookie(w, session.Token, "/", session.Lifetime())
 	w.Header().Set("HX-REDIRECT", "/home")
 	w.WriteHeader(http.StatusOK)
 }

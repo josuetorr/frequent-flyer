@@ -10,8 +10,9 @@ func SetCookie(w http.ResponseWriter, value string, path string, age int) {
 		Value: value,
 		// HttpOnly: true,
 		// Secure:   true,
-		Path:   path,
-		MaxAge: age,
+		Path:     path,
+		MaxAge:   age,
+		SameSite: http.SameSiteStrictMode,
 	})
 }
 
@@ -21,7 +22,8 @@ func InvalidateCookie(w http.ResponseWriter) {
 		Value: "",
 		// HttpOnly: true,
 		// Secure:   true,
-		Path:   "/",
-		MaxAge: -1,
+		Path:     "/",
+		MaxAge:   -1,
+		SameSite: http.SameSiteStrictMode,
 	})
 }

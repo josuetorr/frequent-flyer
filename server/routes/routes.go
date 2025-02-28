@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
 	cm "github.com/go-chi/chi/middleware"
 	"github.com/josuetorr/frequent-flyer/internal/data"
@@ -23,6 +25,9 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RedirectIfLogged(sessionService))
 
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+		})
 		r.Method("GET", "/login", pages.NewLoginPageHandler())
 		r.Method("POST", "/login", forms.NewLoginHandler(authService))
 
