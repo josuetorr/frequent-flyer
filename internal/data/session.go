@@ -12,6 +12,7 @@ const (
   VALUES ($1, $2, $3, $4, $5, $6)`
 	selectSessionByIdQuery     = "SELECT * FROM sessions WHERE id = $1"
 	selectSessionByUserIdQuery = "SELECT * FROM sessions WHERE user_id = $1"
+	deleteSessionByTokenQuery  = "DELETE FROM session WHERE token = $1"
 )
 
 type SessionRepository struct {
@@ -61,6 +62,7 @@ func (r *SessionRepository) Update(ctx context.Context, id models.ID, session *m
 	panic("session repo update not implemented")
 }
 
-func (r *SessionRepository) Delete(ctx context.Context, id models.ID, hard bool) error {
-	panic("session repo delete not implemented")
+func (r *SessionRepository) Delete(ctx context.Context, token models.SessionToken, hard bool) error {
+	_, err := r.db.Exec(ctx, deleteSessionByTokenQuery, token)
+	return err
 }

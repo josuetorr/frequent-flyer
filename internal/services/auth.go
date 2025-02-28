@@ -48,21 +48,21 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 	return user.ID, nil
 }
 
-func (s *AuthService) Login(ctx context.Context, email string, password string) (models.SessionToken, error) {
+func (s *AuthService) Login(ctx context.Context, email string, password string) (*models.Session, error) {
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
-		return "", errors.New("Invalid credentials")
+		return nil, errors.New("Invalid credentials")
 	}
 
 	if err := utils.ComparePassword(u.Password, password); err != nil {
 		slog.Error("Invalid password: " + password)
-		return "", errors.New("Invalid credentials")
+		return nil, errors.New("Invalid credentials")
 	}
 
 	token, err := utils.GenerateRandomToken()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	weekDuration := time.Hour * 24 * 7
@@ -74,8 +74,8 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	}
 
 	if err := s.sessionRepo.Insert(ctx, session); err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return session.Token, nil
+	return session, nil
 }

@@ -13,3 +13,7 @@ type Session struct {
 	CreatedAt time.Time
 	ExpiresAt time.Time
 }
+
+func (s Session) Lifetime() int {
+	return s.ExpiresAt.Compare(s.CreatedAt)
+}
