@@ -60,17 +60,17 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 		return "", errors.New("Invalid credentials")
 	}
 
-	weekDuration := time.Hour * 24 * 7
 	token, err := utils.GenerateRandomToken()
 	if err != nil {
 		return "", err
 	}
 
+	weekDuration := time.Hour * 24 * 7
 	session := &models.Session{
 		UserID:    u.ID,
 		Token:     token,
 		CreatedAt: time.Now().UTC(),
-		ExpiresIn: weekDuration,
+		ExpiresIn: time.Now().UTC().Add(weekDuration),
 	}
 
 	if err := s.sessionRepo.Insert(ctx, session); err != nil {
