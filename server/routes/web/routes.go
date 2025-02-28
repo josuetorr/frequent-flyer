@@ -9,6 +9,7 @@ func RegisterWebRoutes() chi.Router {
 	r := chi.NewRouter()
 
 	r.Get("/login", web.NewLoginPageHandler().ServeHTTP)
+	r.Post("/login", web.NewLoginPostHandler().ServeHTTP)
 	r.Get("/signup", web.NewSignupPageHandler().ServeHTTP)
 	r.Get("/home", web.NewHomePageHandler().ServeHTTP)
 

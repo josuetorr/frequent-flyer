@@ -11,16 +11,16 @@ func NewLoginPostHandler() *LoginPostHandler {
 	return &LoginPostHandler{}
 }
 
-func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Response) {
-	err := r.Request.ParseForm()
+func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Form error", http.StatusBadRequest)
 		return
 	}
 
-	email := r.Request.FormValue("email")
-	password := r.Request.FormValue("password")
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
 	println("email: " + email)
 	println("password: " + password)
