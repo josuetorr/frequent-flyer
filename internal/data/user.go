@@ -93,17 +93,3 @@ func (r *UserRepository) Delete(ctx context.Context, id models.ID, hard bool) er
 	_, err := r.db.Exec(ctx, query, id)
 	return err
 }
-
-func (r *UserRepository) UpdateRefreshToken(ctx context.Context, id models.ID, refreshToken string) error {
-	_, err := r.db.Exec(ctx, updateUserRefreshToken, refreshToken, id)
-	return err
-}
-
-func (r *UserRepository) GetRefreshToken(ctx context.Context, id models.ID) (string, error) {
-	row := r.db.QueryRow(ctx, selectRefreshTokenQuery, id)
-	var refreshToken string
-	if err := row.Scan(&refreshToken); err != nil {
-		return "", err
-	}
-	return refreshToken, nil
-}

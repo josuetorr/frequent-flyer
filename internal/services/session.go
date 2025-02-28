@@ -18,6 +18,6 @@ func (s *SessionService) Insert(ctx context.Context, session *models.Session) er
 	return s.repo.Insert(ctx, session)
 }
 
-func (s *SessionService) GetById(ctx context.Context, id models.ID) (*models.Session, error) {
-	return s.repo.GetById(ctx, id)
+func (s *SessionService) GetByToken(ctx context.Context, token models.SessionToken) (*models.Session, error) {
+	return s.repo.GetByToken(ctx, token)
 }

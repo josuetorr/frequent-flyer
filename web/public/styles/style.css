@@ -1066,6 +1066,9 @@
       }
     }
   }
+  .fixed {
+    position: fixed;
+  }
   .relative {
     position: relative;
   }
@@ -1194,6 +1197,9 @@
         }
       }
     }
+  }
+  .z-2 {
+    z-index: 2;
   }
   .filter {
     display: flex;

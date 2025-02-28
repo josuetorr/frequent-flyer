@@ -14,4 +14,5 @@ func NewLogoutHandler(authService handlers.AuthService) *LogoutPostHandler {
 	return &LogoutPostHandler{authService: authService}
 }
 
-func (h *LogoutPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
+func (h *LogoutPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+}

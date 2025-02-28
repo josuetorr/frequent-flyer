@@ -3,19 +3,21 @@ package services
 import (
 	"context"
 
-	"github.com/josuetorr/frequent-flyer/internal/data"
 	"github.com/josuetorr/frequent-flyer/internal/models"
 )
 
 type (
 	UserRepository interface {
-		data.Repository[models.User]
+		Insert(context.Context, *models.User) error
+		GetById(context.Context, models.ID) (*models.User, error)
 		GetByEmail(context.Context, string) (*models.User, error)
-		UpdateRefreshToken(ctx context.Context, id string, refreshToken string) error
-		GetRefreshToken(ctx context.Context, id models.ID) (string, error)
+		Update(context.Context, models.ID, *models.User) error
+		Delete(context.Context, models.ID, bool) error
 	}
 	SessionRepository interface {
-		data.Repository[models.Session]
-		GetByUserId(ctx context.Context, userId models.ID) (*models.Session, error)
+		Insert(context.Context, *models.Session) error
+		GetByToken(context.Context, models.SessionToken) (*models.Session, error)
+		Update(context.Context, models.SessionToken, *models.Session) error
+		Delete(context.Context, models.SessionToken) error
 	}
 )
