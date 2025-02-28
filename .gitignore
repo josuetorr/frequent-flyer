@@ -1,0 +1,8 @@
+*.env
+!.template.env
+tmp/
+
+node_modules/
+
+# generate by templ when watching
+web/templates/**/*_templ.txt
