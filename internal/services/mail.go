@@ -1,9 +1,11 @@
 package services
 
 import (
-	"log/slog"
+	"bytes"
+	"context"
 
 	"github.com/josuetorr/frequent-flyer/internal/utils"
+	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 	"gopkg.in/gomail.v2"
 )
 
@@ -13,20 +15,24 @@ func NewMailService() *MailService {
 	return &MailService{}
 }
 
-func SendVerificationEmail(to string) {
+func (s *MailService) SendVerificationEmail(ctx context.Context, to string) error {
 	appEmail := utils.GetAppEmail()
 	appEmailPassword := utils.GetAppEmailPassword()
+
+	var body bytes.Buffer
+	emailTemplates.Verification().Render(ctx, &body)
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", appEmail)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Account verification")
-	m.SetBody("text/html", "Hello <b>Bob</b> and <i>Cora</i>!")
+	m.SetBody("text/html", body.String())
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, appEmail, appEmailPassword)
 
 	if err := d.DialAndSend(m); err != nil {
-		slog.Error(err.Error())
-		return
+		return err
 	}
+
+	return nil
 }
