@@ -6,7 +6,9 @@ id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 firstname TEXT NOT NULL,
 lastname TEXT NOT NULL,
 email TEXT NOT NULL,
-verified BOOL NOT NULL
+password TEXT NOT NULL
+verified BOOL NOT NULL,
+deleted_at TIMESTAMP NULL
 );
 
 -- +goose StatementEnd

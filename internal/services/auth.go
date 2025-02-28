@@ -63,7 +63,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	weekDuration := time.Hour * 24 * 7
 	session := &models.Session{
 		UserID:    u.ID,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
 		ExpiresIn: weekDuration,
 	}
 
