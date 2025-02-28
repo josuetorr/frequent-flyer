@@ -43,5 +43,6 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	println("session id: " + sessionID)
 
+	w.Header().Set("HX-REDIRECT", "/home")
 	w.WriteHeader(http.StatusOK)
 }
