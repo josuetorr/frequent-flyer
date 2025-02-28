@@ -24,5 +24,5 @@ dev:
 
 .PHONY: docker-dev
 docker-dev:
-	docker compose -f .docker/docker-compose.yml --env-file ./backend/.dev.env up -d
+	docker compose -f .docker/docker-compose.yml --env-file .dev.env up -d
 
