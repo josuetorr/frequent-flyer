@@ -79,3 +79,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 
 	return session, nil
 }
+
+func (s *AuthService) Logout(ctx context.Context, token models.SessionToken) error {
+	return s.sessionRepo.Delete(ctx, token)
+}
