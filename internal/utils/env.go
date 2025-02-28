@@ -13,3 +13,11 @@ func GetJwtRefreshSecret() string {
 func GetAppName() string {
 	return os.Getenv("APP_NAME")
 }
+
+func GetAppEmail() string {
+	return os.Getenv("EMAIL_APP_SENDER")
+}
+
+func GetAppEmailPassword() string {
+	return os.Getenv("EMAIL_APP_PASSWORD")
+}

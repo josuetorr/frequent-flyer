@@ -21,6 +21,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 
 	authService := services.NewAuthService(userRepo, sessionRepo)
 	sessionService := services.NewSessionService(sessionRepo)
+	mailService := services.NewMailService()
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RedirectIfLogged(sessionService))
@@ -32,7 +33,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Method("POST", "/login", forms.NewLoginHandler(authService))
 
 		r.Method("GET", "/signup", pages.NewSignupPageHandler())
-		r.Method("POST", "/signup", forms.NewSignupHandler(authService))
+		r.Method("POST", "/signup", forms.NewSignupHandler(authService, mailService))
 	})
 
 	r.Group(func(r chi.Router) {

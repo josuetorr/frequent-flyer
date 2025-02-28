@@ -10,10 +10,11 @@ import (
 
 type SignupPostHandler struct {
 	authService handlers.AuthService
+	mailService handlers.MailService
 }
 
-func NewSignupHandler(authService handlers.AuthService) *SignupPostHandler {
-	return &SignupPostHandler{authService: authService}
+func NewSignupHandler(authService handlers.AuthService, mailService handlers.MailService) *SignupPostHandler {
+	return &SignupPostHandler{authService: authService, mailService: mailService}
 }
 
 func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -40,11 +41,19 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.authService.Signup(r.Context(), email, password)
+	ctx := r.Context()
+	_, err := h.authService.Signup(ctx, email, password)
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
+	}
+
+	if err := h.mailService.SendVerificationEmail(ctx, email); err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+
 	}
 
 	w.WriteHeader(http.StatusCreated)
