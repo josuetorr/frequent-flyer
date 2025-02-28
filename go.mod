@@ -5,7 +5,6 @@ go 1.24.0
 require (
 	github.com/a-h/templ v0.3.833
 	github.com/go-chi/chi v1.5.5
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/jackc/pgx/v5 v5.7.2
 	github.com/joho/godotenv v1.5.1

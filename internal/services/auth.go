@@ -17,7 +17,7 @@ func NewAuthService(userRepo UserRepository) *AuthService {
 	return &AuthService{userRepo: userRepo}
 }
 
-func (s *AuthService) Signup(ctx context.Context, email string, password string) (string, error) {
+func (s *AuthService) Signup(ctx context.Context, email string, password string) (ID, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
 		return "", errors.New("User already exists")
@@ -42,39 +42,20 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		return "", err
 	}
 
-	signedToken, err := utils.NewAccessToken(user.ID)
-	if err != nil {
-		return "", err
-	}
-
-	return signedToken, nil
+	return "", nil
 }
 
-func (s *AuthService) Login(ctx context.Context, email string, password string) (string, string, error) {
+func (s *AuthService) Login(ctx context.Context, email string, password string) (ID, error) {
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
-		return "", "", errors.New("Invalid credentials")
+		return "", errors.New("Invalid credentials")
 	}
 
 	if err := utils.ComparePassword(u.Password, password); err != nil {
 		slog.Error("Invalid password: " + password)
-		return "", "", errors.New("Invalid credentials")
+		return "", errors.New("Invalid credentials")
 	}
 
-	accessToken, err := utils.NewAccessToken(u.ID)
-	if err != nil {
-		return "", "", err
-	}
-
-	refreshToken, err := utils.NewRefreshToken(u.ID)
-	if err != nil {
-		return "", "", err
-	}
-
-	if err := s.userRepo.UpdateRefreshToken(ctx, u.ID, refreshToken); err != nil {
-		return "", "", err
-	}
-
-	return accessToken, refreshToken, nil
+	return "", nil
 }
