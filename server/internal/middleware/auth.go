@@ -21,14 +21,15 @@ func AuthMiddlerware(sessionService handlers.SessionService) func(http.Handler) 
 				return
 			}
 
-			s, err := sessionService.GetByToken(r.Context(), sessionCookie.Value)
+			rCtx := r.Context()
+			s, err := sessionService.GetByToken(rCtx, sessionCookie.Value)
 			if err != nil {
 				slog.Error(err.Error())
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), LoggedUser(s.UserID), s.UserID)
+			ctx := context.WithValue(rCtx, LoggedUser(s.UserID), s.UserID)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		}
 		return http.HandlerFunc(fn)

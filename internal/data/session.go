@@ -28,13 +28,10 @@ func (r *SessionRepository) Insert(ctx context.Context, s *models.Session) error
 }
 
 func (r *SessionRepository) GetByToken(ctx context.Context, token models.SessionToken) (*models.Session, error) {
-	row, err := r.db.Query(ctx, selectSessionByTokenQuery, token)
-	if err != nil {
-		return nil, err
-	}
+	row := r.db.QueryRow(ctx, selectSessionByTokenQuery, token)
 
 	var s models.Session
-	err = row.Scan(&s.ID, &s.UserID, &s.Token, &s.UserAgent, &s.IpAddr, &s.CreatedAt, &s.ExpiresAt)
+	err := row.Scan(&s.ID, &s.UserID, &s.Token, &s.UserAgent, &s.IpAddr, &s.CreatedAt, &s.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
