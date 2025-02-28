@@ -23,7 +23,7 @@ func Login(authService AuthService) ApiHandleFn {
 			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)
 		}
 
-		accessToken, refreshToken, err := authService.LoginWithJwt(r.Context(), req.Email, req.Password)
+		accessToken, refreshToken, err := authService.Login(r.Context(), req.Email, req.Password)
 		if err != nil {
 			return nil, utils.NewApiError(err, "Internal server error", http.StatusInternalServerError)
 		}

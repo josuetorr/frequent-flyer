@@ -23,8 +23,8 @@ type UserService interface {
 }
 
 type AuthService interface {
-	SignupWithJwt(ctx context.Context, email string, password string) (string, error)
-	LoginWithJwt(ctx context.Context, email string, password string) (string, string, error)
+	Signup(ctx context.Context, email string, password string) (string, error)
+	Login(ctx context.Context, email string, password string) (string, string, error)
 }
 
 type ApiHandleFn func(w http.ResponseWriter, r *http.Request) (*utils.ApiResponse, *utils.ApiError)

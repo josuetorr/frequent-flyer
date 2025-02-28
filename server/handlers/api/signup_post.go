@@ -22,7 +22,7 @@ func Signup(authService AuthService) ApiHandleFn {
 			return nil, utils.NewApiError(err, "Invalid json", http.StatusBadRequest)
 		}
 
-		token, err := authService.SignupWithJwt(r.Context(), req.Email, req.Password)
+		token, err := authService.Signup(r.Context(), req.Email, req.Password)
 		if err != nil {
 			return nil, utils.NewApiError(err, "Internal server error", http.StatusInternalServerError)
 		}

@@ -17,7 +17,7 @@ func NewAuthService(userRepo UserRepository) *AuthService {
 	return &AuthService{userRepo: userRepo}
 }
 
-func (s *AuthService) SignupWithJwt(ctx context.Context, email string, password string) (string, error) {
+func (s *AuthService) Signup(ctx context.Context, email string, password string) (string, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
 		return "", errors.New("User already exists")
@@ -50,7 +50,7 @@ func (s *AuthService) SignupWithJwt(ctx context.Context, email string, password 
 	return signedToken, nil
 }
 
-func (s *AuthService) LoginWithJwt(ctx context.Context, email string, password string) (string, string, error) {
+func (s *AuthService) Login(ctx context.Context, email string, password string) (string, string, error) {
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
