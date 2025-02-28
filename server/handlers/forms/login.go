@@ -13,7 +13,7 @@ type LoginPostHandler struct {
 }
 
 func NewLoginPostHandler(authService handlers.AuthService) *LoginPostHandler {
-	return &LoginPostHandler{}
+	return &LoginPostHandler{authService: authService}
 }
 
 func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
