@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	createUserQuery         = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password, refresh_token) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+	createUserQuery         = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password) VALUES ($1, $2, $3, $4, $5, $6)"
 	selectUserByIdQuery     = "SELECT * FROM users WHERE id = $1"
 	selectUserByEmailQuery  = "SELECT * FROM users WHERE email = $1"
 	selectRefreshTokenQuery = "SELECT refresh_token FROM users WHERE id = $1"
@@ -48,7 +48,6 @@ func (r *UserRepository) Insert(ctx context.Context, u *models.User) error {
 		u.DeletedAt,
 		u.Verified,
 		u.Password,
-		u.RefreshToken,
 	)
 	return err
 }
@@ -64,7 +63,7 @@ func (r *UserRepository) get(ctx context.Context, by string, value string) (*mod
 	}
 	row := r.db.QueryRow(ctx, q, value)
 	var u models.User
-	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt, &u.Password, &u.RefreshToken)
+	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.DeletedAt, &u.Verified, &u.Password)
 	if err != nil {
 		return nil, err
 	}
