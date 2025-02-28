@@ -1066,9 +1066,6 @@
       }
     }
   }
-  .fixed {
-    position: fixed;
-  }
   .relative {
     position: relative;
   }
@@ -1198,8 +1195,8 @@
       }
     }
   }
-  .m-2 {
-    margin: calc(var(--spacing) * 2);
+  .m-3 {
+    margin: calc(var(--spacing) * 3);
   }
   .filter {
     display: flex;
@@ -1451,6 +1448,9 @@
   }
   .table {
     display: table;
+  }
+  .h-3 {
+    height: calc(var(--spacing) * 3);
   }
   .h-screen {
     height: 100vh;

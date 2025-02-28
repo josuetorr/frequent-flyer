@@ -20,14 +20,19 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	authService := services.NewAuthService(userRepo, sessionRepo)
 	sessionService := services.NewSessionService(sessionRepo)
 
-	r.Method("GET", "/login", pages.NewLoginPageHandler())
-	r.Method("POST", "/login", forms.NewLoginHandler(authService))
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.RedirectIfLogged(sessionService))
 
-	r.Method("GET", "/signup", pages.NewSignupPageHandler())
-	r.Method("POST", "/signup", forms.NewSignupHandler(authService))
+		r.Method("GET", "/login", pages.NewLoginPageHandler())
+		r.Method("POST", "/login", forms.NewLoginHandler(authService))
+
+		r.Method("GET", "/signup", pages.NewSignupPageHandler())
+		r.Method("POST", "/signup", forms.NewSignupHandler(authService))
+	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddlerware(sessionService))
+
 		r.Method("GET", "/home", pages.NewHomePageHandler())
 		r.Method("POST", "/logout", forms.NewLogoutHandler(authService))
 	})

@@ -29,6 +29,6 @@ func (h *LogoutPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SetCookie(w, "", "/", -1)
+	utils.InvalidateCookie(w)
 	w.Header().Set("HX-REDIRECT", "/login")
 }
