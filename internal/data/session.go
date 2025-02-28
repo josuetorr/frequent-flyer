@@ -11,7 +11,7 @@ const (
   INSERT INTO sessions (user_id, token, user_agent, ip_address, created_at, expires_at) 
   VALUES ($1, $2, $3, $4, $5, $6)`
 	selectSessionByTokenQuery = "SELECT * FROM sessions WHERE token = $1"
-	deleteSessionByTokenQuery = "DELETE FROM session WHERE token = $1"
+	deleteSessionByTokenQuery = "DELETE FROM sessions WHERE token = $1"
 )
 
 type SessionRepository struct {
