@@ -18,5 +18,6 @@ type (
 	}
 	SessionRepository interface {
 		data.Repository[Session]
+		GetByUserId(ctx context.Context, userId ID) (*Session, error)
 	}
 )

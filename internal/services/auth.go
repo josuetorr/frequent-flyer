@@ -4,17 +4,19 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"time"
 
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepo UserRepository
+	userRepo    UserRepository
+	sessionRepo SessionRepository
 }
 
-func NewAuthService(userRepo UserRepository) *AuthService {
-	return &AuthService{userRepo: userRepo}
+func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *AuthService {
+	return &AuthService{userRepo: userRepo, sessionRepo: sessionRepo}
 }
 
 func (s *AuthService) Signup(ctx context.Context, email string, password string) (ID, error) {
@@ -42,7 +44,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		return "", err
 	}
 
-	return "", nil
+	return user.ID, nil
 }
 
 func (s *AuthService) Login(ctx context.Context, email string, password string) (ID, error) {
@@ -57,5 +59,21 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 		return "", errors.New("Invalid credentials")
 	}
 
-	return "", nil
+	weekDuration := time.Hour * 24 * 7
+	session := &Session{
+		UserID:    u.ID,
+		CreatedAt: time.Now(),
+		ExpiresIn: weekDuration,
+	}
+
+	if err := s.sessionRepo.Insert(ctx, session); err != nil {
+		return "", err
+	}
+
+	session, err = s.sessionRepo.GetByUserId(ctx, u.ID)
+	if err != nil {
+		return "", err
+	}
+
+	return session.ID, nil
 }

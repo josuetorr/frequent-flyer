@@ -3,6 +3,7 @@ package forms
 import (
 	"log/slog"
 	"net/http"
+	"net/mail"
 )
 
 type LoginPostHandler struct{}
@@ -21,6 +22,13 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+
+	_, err = mail.ParseAddress(email)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Invalid email", http.StatusBadRequest)
+		return
+	}
 
 	println("email: " + email)
 	println("password: " + password)
