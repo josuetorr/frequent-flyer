@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 
-	"github.com/josuetorr/frequent-flyer/server/models"
+	"github.com/josuetorr/frequent-flyer/internal/models"
 )
 
 type (

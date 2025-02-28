@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	"github.com/josuetorr/frequent-flyer/server/models"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 )
 
 type UserService interface {
-	Insert(context.Context, *models.User) error
+	Insert(context.Context, *User) error
 	GetById(context.Context, ID) (*User, error)
 	Update(context.Context, ID, *User) error
 	Delete(context.Context, ID, bool) error
