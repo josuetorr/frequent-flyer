@@ -1491,9 +1491,6 @@
   .p-2 {
     padding: calc(var(--spacing) * 2);
   }
-  .p-9 {
-    padding: calc(var(--spacing) * 9);
-  }
   .link-accent {
     color: var(--color-accent);
     @media (hover: hover) {
