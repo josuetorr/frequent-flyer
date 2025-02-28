@@ -7,7 +7,9 @@ import (
 )
 
 const (
-	createSessionQuery         = "INSERT INTO sessions (user_id, created_at, expires_in) VALUES ($1, $2, $3)"
+	createSessionQuery = `
+  INSERT INTO sessions (user_id, token, user_agent, ip_address, created_at, expires_at) 
+  VALUES ($1, $2, $3, $4, $5, $6)`
 	selectSessionByIdQuery     = "SELECT * FROM sessions WHERE id = $1"
 	selectSessionByUserIdQuery = "SELECT * FROM sessions WHERE user_id = $1"
 )
@@ -21,7 +23,7 @@ func NewSessionRepository(db *DBPool) *SessionRepository {
 }
 
 func (r *SessionRepository) Insert(ctx context.Context, s *models.Session) error {
-	_, err := r.db.Query(ctx, createSessionQuery, s.UserID, s.CreatedAt, s.ExpiresAt)
+	_, err := r.db.Query(ctx, createSessionQuery, s.UserID, s.Token, s.UserAgent, s.IpAddr, s.CreatedAt, s.ExpiresAt)
 	return err
 }
 
@@ -32,7 +34,7 @@ func (r *SessionRepository) GetById(ctx context.Context, id models.ID) (*models.
 	}
 
 	var s models.Session
-	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresAt)
+	err = row.Scan(&s.ID, &s.UserID, &s.Token, &s.UserAgent, &s.IpAddr, &s.CreatedAt, &s.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
