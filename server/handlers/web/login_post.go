@@ -5,13 +5,13 @@ import (
 	"net/http"
 )
 
-type LoginFormHandler struct{}
+type LoginPostHandler struct{}
 
-func NewLoginFormHandler() *LoginFormHandler {
-	return &LoginFormHandler{}
+func NewLoginPostHandler() *LoginPostHandler {
+	return &LoginPostHandler{}
 }
 
-func (h *LoginFormHandler) ServeHTTP(w http.ResponseWriter, r *http.Response) {
+func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Response) {
 	err := r.Request.ParseForm()
 	if err != nil {
 		slog.Error(err.Error())
