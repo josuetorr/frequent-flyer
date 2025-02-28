@@ -21,7 +21,7 @@ func NewSessionRepository(db *DBPool) *SessionRepository {
 }
 
 func (r *SessionRepository) Insert(ctx context.Context, s *models.Session) error {
-	_, err := r.db.Query(ctx, createSessionQuery, s.UserID, s.CreatedAt, s.ExpiresIn)
+	_, err := r.db.Query(ctx, createSessionQuery, s.UserID, s.CreatedAt, s.ExpiresAt)
 	return err
 }
 
@@ -32,7 +32,7 @@ func (r *SessionRepository) GetById(ctx context.Context, id models.ID) (*models.
 	}
 
 	var s models.Session
-	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresIn)
+	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (r *SessionRepository) GetByUserId(ctx context.Context, id models.ID) (*mod
 	}
 
 	var s models.Session
-	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresIn)
+	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresAt)
 	if err != nil {
 		return nil, err
 	}

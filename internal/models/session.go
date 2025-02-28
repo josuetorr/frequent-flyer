@@ -11,5 +11,5 @@ type Session struct {
 	UserAgent string
 	IpAddr    string
 	CreatedAt time.Time
-	ExpiresIn time.Time
+	ExpiresAt time.Time
 }

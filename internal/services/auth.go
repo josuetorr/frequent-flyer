@@ -70,7 +70,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 		UserID:    u.ID,
 		Token:     token,
 		CreatedAt: time.Now().UTC(),
-		ExpiresIn: time.Now().UTC().Add(weekDuration),
+		ExpiresAt: time.Now().UTC().Add(weekDuration),
 	}
 
 	if err := s.sessionRepo.Insert(ctx, session); err != nil {
