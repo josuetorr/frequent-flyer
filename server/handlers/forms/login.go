@@ -12,7 +12,7 @@ type LoginPostHandler struct {
 	authService handlers.AuthService
 }
 
-func NewLoginPostHandler(authService handlers.AuthService) *LoginPostHandler {
+func NewLoginHandler(authService handlers.AuthService) *LoginPostHandler {
 	return &LoginPostHandler{authService: authService}
 }
 

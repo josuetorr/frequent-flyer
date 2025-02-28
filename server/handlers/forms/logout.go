@@ -10,7 +10,7 @@ type LogoutPostHandler struct {
 	authService handlers.AuthService
 }
 
-func NewLogoutPostHandler(authService handlers.AuthService) *LogoutPostHandler {
+func NewLogoutHandler(authService handlers.AuthService) *LogoutPostHandler {
 	return &LogoutPostHandler{authService: authService}
 }
 

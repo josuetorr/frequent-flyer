@@ -12,7 +12,7 @@ type SignupPostHandler struct {
 	authService handlers.AuthService
 }
 
-func NewSignupPostHandler(authService handlers.AuthService) *SignupPostHandler {
+func NewSignupHandler(authService handlers.AuthService) *SignupPostHandler {
 	return &SignupPostHandler{authService: authService}
 }
 
