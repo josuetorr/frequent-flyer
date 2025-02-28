@@ -54,3 +54,11 @@ func (r *SessionRepository) GetByUserId(ctx context.Context, id models.ID) (*mod
 
 	return &s, nil
 }
+
+func (r *SessionRepository) Update(ctx context.Context, id models.ID, session *models.Session) error {
+	panic("session repo update not implemented")
+}
+
+func (r *SessionRepository) Delete(ctx context.Context, id models.ID, hard bool) error {
+	panic("session repo delete not implemented")
+}

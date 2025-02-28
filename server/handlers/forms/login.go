@@ -12,7 +12,7 @@ type LoginPostHandler struct {
 	authService handlers.AuthService
 }
 
-func NewLoginPostHandler() *LoginPostHandler {
+func NewLoginPostHandler(authService handlers.AuthService) *LoginPostHandler {
 	return &LoginPostHandler{}
 }
 
@@ -34,7 +34,14 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	println("email: " + email)
-	println("password: " + password)
+	sessionID, err := h.authService.Login(r.Context(), email, password)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	println("session id: " + sessionID)
+
 	w.WriteHeader(http.StatusOK)
 }
