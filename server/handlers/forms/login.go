@@ -4,9 +4,13 @@ import (
 	"log/slog"
 	"net/http"
 	"net/mail"
+
+	"github.com/josuetorr/frequent-flyer/server/handlers"
 )
 
-type LoginPostHandler struct{}
+type LoginPostHandler struct {
+	authService handlers.AuthService
+}
 
 func NewLoginPostHandler() *LoginPostHandler {
 	return &LoginPostHandler{}

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -19,7 +20,7 @@ func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *Aut
 	return &AuthService{userRepo: userRepo, sessionRepo: sessionRepo}
 }
 
-func (s *AuthService) Signup(ctx context.Context, email string, password string) (ID, error) {
+func (s *AuthService) Signup(ctx context.Context, email string, password string) (models.ID, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
 		return "", errors.New("User already exists")
@@ -30,7 +31,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		return "", err
 	}
 
-	user := &User{
+	user := &models.User{
 		Email:    email,
 		Password: string(hash),
 	}
@@ -47,7 +48,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 	return user.ID, nil
 }
 
-func (s *AuthService) Login(ctx context.Context, email string, password string) (ID, error) {
+func (s *AuthService) Login(ctx context.Context, email string, password string) (models.ID, error) {
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
@@ -60,7 +61,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	}
 
 	weekDuration := time.Hour * 24 * 7
-	session := &Session{
+	session := &models.Session{
 		UserID:    u.ID,
 		CreatedAt: time.Now(),
 		ExpiresIn: weekDuration,

@@ -1,6 +1,10 @@
 package data
 
-import "context"
+import (
+	"context"
+
+	"github.com/josuetorr/frequent-flyer/internal/models"
+)
 
 const (
 	createSessionQuery         = "INSERT INTO sessions (user_id, created_at, expires_in) VALUES ($1, $2, $3)"
@@ -16,18 +20,18 @@ func NewSessionRepository(db *DBPool) *SessionRepository {
 	return &SessionRepository{db: db}
 }
 
-func (r *SessionRepository) Insert(ctx context.Context, s *Session) error {
+func (r *SessionRepository) Insert(ctx context.Context, s *models.Session) error {
 	_, err := r.db.Query(ctx, createSessionQuery, s.UserID, s.CreatedAt, s.ExpiresIn)
 	return err
 }
 
-func (r *SessionRepository) GetById(ctx context.Context, id ID) (*Session, error) {
+func (r *SessionRepository) GetById(ctx context.Context, id models.ID) (*models.Session, error) {
 	row, err := r.db.Query(ctx, selectSessionByIdQuery, id)
 	if err != nil {
 		return nil, err
 	}
 
-	var s Session
+	var s models.Session
 	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresIn)
 	if err != nil {
 		return nil, err
@@ -36,13 +40,13 @@ func (r *SessionRepository) GetById(ctx context.Context, id ID) (*Session, error
 	return &s, nil
 }
 
-func (r *SessionRepository) GetByUserId(ctx context.Context, id ID) (*Session, error) {
+func (r *SessionRepository) GetByUserId(ctx context.Context, id models.ID) (*models.Session, error) {
 	row, err := r.db.Query(ctx, selectSessionByUserIdQuery, id)
 	if err != nil {
 		return nil, err
 	}
 
-	var s Session
+	var s models.Session
 	err = row.Scan(&s.ID, &s.UserID, &s.CreatedAt, &s.ExpiresIn)
 	if err != nil {
 		return nil, err

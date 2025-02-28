@@ -3,6 +3,8 @@ package data
 import (
 	"context"
 	"errors"
+
+	"github.com/josuetorr/frequent-flyer/internal/models"
 )
 
 const (
@@ -36,7 +38,7 @@ func NewUserRepository(db *DBPool) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) Insert(ctx context.Context, u *User) error {
+func (r *UserRepository) Insert(ctx context.Context, u *models.User) error {
 	_, err := r.db.Exec(
 		ctx,
 		createUserQuery,
@@ -51,7 +53,7 @@ func (r *UserRepository) Insert(ctx context.Context, u *User) error {
 	return err
 }
 
-func (r *UserRepository) get(ctx context.Context, by string, value string) (*User, error) {
+func (r *UserRepository) get(ctx context.Context, by string, value string) (*models.User, error) {
 	allowedQueries := map[string]string{
 		"id":    selectUserByIdQuery,
 		"email": selectUserByEmailQuery,
@@ -61,7 +63,7 @@ func (r *UserRepository) get(ctx context.Context, by string, value string) (*Use
 		return nil, errors.New("Invalid query field")
 	}
 	row := r.db.QueryRow(ctx, q, value)
-	var u User
+	var u models.User
 	err := row.Scan(&u.ID, &u.Firstname, &u.Lastname, &u.Email, &u.Verified, &u.DeletedAt, &u.Password, &u.RefreshToken)
 	if err != nil {
 		return nil, err
@@ -69,20 +71,20 @@ func (r *UserRepository) get(ctx context.Context, by string, value string) (*Use
 	return &u, nil
 }
 
-func (r *UserRepository) GetById(ctx context.Context, id ID) (*User, error) {
+func (r *UserRepository) GetById(ctx context.Context, id models.ID) (*models.User, error) {
 	return r.get(ctx, "id", id)
 }
 
-func (r *UserRepository) GetByEmail(ctx context.Context, email ID) (*User, error) {
+func (r *UserRepository) GetByEmail(ctx context.Context, email models.ID) (*models.User, error) {
 	return r.get(ctx, "email", email)
 }
 
-func (r *UserRepository) Update(ctx context.Context, id ID, u *User) error {
+func (r *UserRepository) Update(ctx context.Context, id models.ID, u *models.User) error {
 	_, err := r.db.Exec(ctx, updateUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified, id)
 	return err
 }
 
-func (r *UserRepository) Delete(ctx context.Context, id ID, hard bool) error {
+func (r *UserRepository) Delete(ctx context.Context, id models.ID, hard bool) error {
 	var query string
 	if hard {
 		query = deleteHardUserQuery
@@ -93,12 +95,12 @@ func (r *UserRepository) Delete(ctx context.Context, id ID, hard bool) error {
 	return err
 }
 
-func (r *UserRepository) UpdateRefreshToken(ctx context.Context, id ID, refreshToken string) error {
+func (r *UserRepository) UpdateRefreshToken(ctx context.Context, id models.ID, refreshToken string) error {
 	_, err := r.db.Exec(ctx, updateUserRefreshToken, refreshToken, id)
 	return err
 }
 
-func (r *UserRepository) GetRefreshToken(ctx context.Context, id ID) (string, error) {
+func (r *UserRepository) GetRefreshToken(ctx context.Context, id models.ID) (string, error) {
 	row := r.db.QueryRow(ctx, selectRefreshTokenQuery, id)
 	var refreshToken string
 	if err := row.Scan(&refreshToken); err != nil {
