@@ -1,4 +1,4 @@
-package pages
+package web
 
 import (
 	"net/http"
