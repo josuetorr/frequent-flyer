@@ -54,7 +54,7 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 		}
 
 		if s.Expired() {
-			slog.Error(fmt.Sprintf("Session expired ID: ", sessionID))
+			slog.Error(fmt.Sprintf("Session expired ID: %s", sessionID))
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}

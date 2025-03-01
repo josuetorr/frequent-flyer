@@ -34,7 +34,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 			http.Redirect(w, r, "/login", http.StatusFound)
 		})
 		r.Method("GET", "/login", pages.NewLoginPageHandler())
-		r.Method("POST", "/login", forms.NewLoginHandler(authService))
+		r.Method("POST", "/login", forms.NewLoginHandler(sessionCookieName, authService))
 
 		r.Method("GET", "/signup", pages.NewSignupPageHandler())
 		r.Method("POST", "/signup", forms.NewSignupHandler(authService, mailService))
