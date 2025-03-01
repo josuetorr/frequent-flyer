@@ -12,7 +12,7 @@ import (
 
 type LoggedUser = string
 
-type LoggedUserKey = LoggedUser("logger_user")
+var LoggedUserKey = LoggedUser("logger_user")
 
 type Middleware = func(http.Handler) http.Handler
 
@@ -30,15 +30,15 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 		sessionCookie, err := r.Cookie(m.sessionCookieName)
 		if err != nil {
 			slog.Error(err.Error())
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}
 
-    // TODO: decrypt session cookie
+		// TODO: decrypt session cookie
 		values := strings.Split(sessionCookie.Value, ":")
 		if len(values) != 2 {
 			slog.Error(fmt.Sprintf("Invalid session cookie: %+v", values))
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}
 
@@ -49,7 +49,13 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 		s, u, err := m.sessionService.GetWithUser(rCtx, sessionID, userId)
 		if err != nil {
 			slog.Error(err.Error())
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		if s.Expired() {
+			slog.Error(fmt.Sprintf("Session expired ID: ", sessionID))
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}
 
@@ -72,8 +78,13 @@ func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
 			return
 		}
 
+		values := strings.Split(sessionCookie.Value, ":")
+
+		sessionID := values[0]
+		userID := values[1]
+
 		rCtx := r.Context()
-		s, _ := m.sessionService.GetByToken(rCtx, sessionCookie.Value)
+		s, _, _ := m.sessionService.GetWithUser(rCtx, sessionID, userID)
 		if s == nil {
 			next.ServeHTTP(w, r)
 			return
