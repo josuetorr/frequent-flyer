@@ -8,16 +8,15 @@ import (
 
 type (
 	UserRepository interface {
-		Insert(context.Context, *models.User) error
-		GetById(context.Context, models.ID) (*models.User, error)
-		GetByEmail(context.Context, string) (*models.User, error)
-		Update(context.Context, models.ID, *models.User) error
-		Delete(context.Context, models.ID, bool) error
+		Insert(ctx context.Context, userID *models.User) error
+		GetById(ctx context.Context, userID models.ID) (*models.User, error)
+		GetByEmail(ctx context.Context, email string) (*models.User, error)
+		Update(ctx context.Context, userID models.ID, user *models.User) error
+		Delete(ctx context.Context, userID models.ID, hard bool) error
 	}
 	SessionRepository interface {
-		Insert(context.Context, *models.Session) error
-		GetByToken(context.Context, models.SessionToken) (*models.Session, error)
-		Update(context.Context, models.SessionToken, *models.Session) error
-		Delete(context.Context, models.SessionToken) error
+		Insert(ctx context.Context, session *models.Session) error
+		GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error)
+		Delete(ctx context.Context, sessionID models.ID, userID models.ID) error
 	}
 )
