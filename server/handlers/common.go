@@ -9,7 +9,6 @@ import (
 type AuthService interface {
 	Signup(ctx context.Context, email string, password string) (models.ID, error)
 	Login(ctx context.Context, email string, password string) (*models.Session, error)
-	Logout(ctx context.Context, token models.SessionToken) error
 }
 
 type MailService interface {
@@ -17,5 +16,5 @@ type MailService interface {
 }
 
 type SessionService interface {
-	GetByToken(ctx context.Context, token models.SessionToken) (*models.Session, error)
+	GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error)
 }
