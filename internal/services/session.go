@@ -21,7 +21,3 @@ func (s *SessionService) Insert(ctx context.Context, session *models.Session) er
 func (s *SessionService) GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error) {
 	return s.repo.GetWithUser(ctx, sessionID, userID)
 }
-
-func (s *SessionService) Delete(ctx context.Context, sessionID models.ID, userID models.ID) error {
-	return s.repo.Delete(ctx, sessionID, userID)
-}
