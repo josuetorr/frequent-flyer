@@ -1,20 +1,21 @@
 package forms
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/mail"
 
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	"github.com/josuetorr/frequent-flyer/server/internal/utils"
 )
 
 type LoginPostHandler struct {
-	authService handlers.AuthService
+	sessionCookieName string
+	authService       handlers.AuthService
 }
 
-func NewLoginHandler(authService handlers.AuthService) *LoginPostHandler {
-	return &LoginPostHandler{authService: authService}
+func NewLoginHandler(sessionCookieName string, authService handlers.AuthService) *LoginPostHandler {
+	return &LoginPostHandler{sessionCookieName: sessionCookieName, authService: authService}
 }
 
 func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +43,18 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SetCookie(w, session.Token, "/", session.Lifetime())
+	// TODO: encrypt session cookie
+	cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  h.sessionCookieName,
+		Value: cookieValue,
+		// HttpOnly: true,
+		// Secure:   true,
+		Path:     "/",
+		MaxAge:   -1,
+		SameSite: http.SameSiteStrictMode,
+	})
 	w.Header().Set("HX-REDIRECT", "/home")
 	w.WriteHeader(http.StatusOK)
 }
