@@ -14,3 +14,7 @@ type Session struct {
 func (s Session) Lifetime() int {
 	return int(s.ExpiresAt.Sub(s.CreatedAt).Seconds())
 }
+
+func (s Session) Expired() bool {
+	return s.Lifetime() <= 0
+}
