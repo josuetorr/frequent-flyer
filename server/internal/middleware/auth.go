@@ -2,65 +2,108 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	"github.com/josuetorr/frequent-flyer/server/internal/utils"
 )
 
 type LoggedUser = string
 
+var LoggedUserKey = LoggedUser("logger_user")
+
 type Middleware = func(http.Handler) http.Handler
 
-func AuthMiddlerware(sessionService handlers.SessionService) Middleware {
-	return func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			sessionCookie, err := r.Cookie(utils.SessionCookieName)
-			if err != nil {
-				slog.Error(err.Error())
-				http.Redirect(w, r, "/login", http.StatusFound)
-				return
-			}
-
-			rCtx := r.Context()
-			s, err := sessionService.GetByToken(rCtx, sessionCookie.Value)
-			if err != nil {
-				slog.Error(err.Error())
-				http.Redirect(w, r, "/login", http.StatusFound)
-				return
-			}
-
-			ctx := context.WithValue(rCtx, LoggedUser(s.UserID), s.UserID)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		}
-		return http.HandlerFunc(fn)
-	}
+type AuthMiddleware struct {
+	sessionCookieName string
+	sessionService    handlers.SessionService
 }
 
-func RedirectIfLogged(sessionService handlers.SessionService) Middleware {
-	return func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			sessionCookie, _ := r.Cookie(utils.SessionCookieName)
+func NewAuthMiddleware(sessionCookieName string, sessionService handlers.SessionService) *AuthMiddleware {
+	return &AuthMiddleware{sessionCookieName: sessionCookieName, sessionService: sessionService}
+}
 
-			if sessionCookie == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
-			if sessionCookie.Value == "" {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			rCtx := r.Context()
-			s, _ := sessionService.GetByToken(rCtx, sessionCookie.Value)
-			if s == nil {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			http.Redirect(w, r, "/home", http.StatusFound)
+func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		sessionCookie, err := r.Cookie(m.sessionCookieName)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
 		}
-		return http.HandlerFunc(fn)
+
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		values := strings.Split(cookieValue, ":")
+		if len(values) != 2 {
+			slog.Error(fmt.Sprintf("Invalid session cookie: %+v", values))
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		sessionID := values[0]
+		userId := values[1]
+
+		rCtx := r.Context()
+		s, u, err := m.sessionService.GetWithUser(rCtx, sessionID, userId)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		if s.Expired() {
+			slog.Error(fmt.Sprintf("Session expired ID: %s", sessionID))
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		ctx := context.WithValue(rCtx, LoggedUserKey, u)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	}
+	return http.HandlerFunc(fn)
+}
+
+func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		sessionCookie, _ := r.Cookie(m.sessionCookieName)
+
+		if sessionCookie == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if sessionCookie.Value == "" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		if err != nil {
+			slog.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+		values := strings.Split(cookieValue, ":")
+
+		sessionID := values[0]
+		userID := values[1]
+
+		rCtx := r.Context()
+		s, _, _ := m.sessionService.GetWithUser(rCtx, sessionID, userID)
+		if s == nil {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		http.Redirect(w, r, "/home", http.StatusFound)
+	}
+	return http.HandlerFunc(fn)
 }

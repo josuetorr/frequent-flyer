@@ -2,12 +2,9 @@ package models
 
 import "time"
 
-type SessionToken = string
-
 type Session struct {
 	ID        ID
 	UserID    ID
-	Token     SessionToken
 	UserAgent string
 	IpAddr    string
 	CreatedAt time.Time
@@ -16,4 +13,8 @@ type Session struct {
 
 func (s Session) Lifetime() int {
 	return int(s.ExpiresAt.Sub(s.CreatedAt).Seconds())
+}
+
+func (s Session) Expired() bool {
+	return s.Lifetime() <= 0
 }

@@ -1,20 +1,23 @@
 package forms
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/mail"
 
+	"github.com/gorilla/securecookie"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	"github.com/josuetorr/frequent-flyer/server/internal/utils"
 )
 
 type LoginPostHandler struct {
-	authService handlers.AuthService
+	sessionCookieName string
+	authService       handlers.AuthService
 }
 
-func NewLoginHandler(authService handlers.AuthService) *LoginPostHandler {
-	return &LoginPostHandler{authService: authService}
+func NewLoginHandler(sessionCookieName string, authService handlers.AuthService) *LoginPostHandler {
+	return &LoginPostHandler{sessionCookieName: sessionCookieName, authService: authService}
 }
 
 func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +45,31 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.SetCookie(w, session.Token, "/", session.Lifetime())
+	cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
+	cookieValue, err = utils.EncodeCookie(h.sessionCookieName, cookieValue)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	s := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
+	encoded, err := s.Encode(h.sessionCookieName, cookieValue)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:  h.sessionCookieName,
+		Value: encoded,
+		// HttpOnly: true,
+		// Secure:   true,
+		Path:     "/",
+		MaxAge:   session.Lifetime(),
+		SameSite: http.SameSiteStrictMode,
+	})
 	w.Header().Set("HX-REDIRECT", "/home")
 	w.WriteHeader(http.StatusOK)
 }

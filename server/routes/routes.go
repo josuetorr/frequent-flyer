@@ -16,6 +16,8 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	r := chi.NewRouter()
 	r.Use(cm.Logger)
 
+	sessionCookieName := "session_cookie"
+
 	userRepo := data.NewUserRepository(db)
 	sessionRepo := data.NewSessionRepository(db)
 
@@ -23,24 +25,26 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	sessionService := services.NewSessionService(sessionRepo)
 	mailService := services.NewMailService()
 
+	authMw := middleware.NewAuthMiddleware(sessionCookieName, sessionService)
+
 	r.Group(func(r chi.Router) {
-		r.Use(middleware.RedirectIfLogged(sessionService))
+		r.Use(authMw.RedirectIfLogged)
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", http.StatusFound)
 		})
 		r.Method("GET", "/login", pages.NewLoginPageHandler())
-		r.Method("POST", "/login", forms.NewLoginHandler(authService))
+		r.Method("POST", "/login", forms.NewLoginHandler(sessionCookieName, authService))
 
 		r.Method("GET", "/signup", pages.NewSignupPageHandler())
 		r.Method("POST", "/signup", forms.NewSignupHandler(authService, mailService))
 	})
 
 	r.Group(func(r chi.Router) {
-		r.Use(middleware.AuthMiddlerware(sessionService))
+		r.Use(authMw.Authorized)
 
 		r.Method("GET", "/home", pages.NewHomePageHandler())
-		r.Method("POST", "/logout", forms.NewLogoutHandler(authService))
+		r.Method("POST", "/logout", forms.NewLogoutHandler(sessionCookieName, authService))
 	})
 
 	return r

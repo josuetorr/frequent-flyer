@@ -14,10 +14,10 @@ func NewSessionService(repo SessionRepository) *SessionService {
 	return &SessionService{repo: repo}
 }
 
-func (s *SessionService) Insert(ctx context.Context, session *models.Session) error {
+func (s *SessionService) Insert(ctx context.Context, session *models.Session) (*models.Session, error) {
 	return s.repo.Insert(ctx, session)
 }
 
-func (s *SessionService) GetByToken(ctx context.Context, token models.SessionToken) (*models.Session, error) {
-	return s.repo.GetByToken(ctx, token)
+func (s *SessionService) GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error) {
+	return s.repo.GetWithUser(ctx, sessionID, userID)
 }

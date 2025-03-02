@@ -21,3 +21,11 @@ func GetAppEmail() string {
 func GetAppEmailPassword() string {
 	return os.Getenv("EMAIL_APP_PASSWORD")
 }
+
+func GetSessionHashKey() string {
+	return os.Getenv("SESSION_HASH_KEY")
+}
+
+func GetSessionBlockKey() string {
+	return os.Getenv("SESSION_BLOCK_KEY")
+}
