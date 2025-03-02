@@ -25,7 +25,7 @@ const (
     users.lastname,
     users.email,
     users.deleted_at,
-    users.verified,
+    users.verified
   FROM sessions 
   JOIN users ON session.user_id = user.id
   WHERE id = $1 AND user_id = $2

@@ -52,7 +52,7 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		// HttpOnly: true,
 		// Secure:   true,
 		Path:     "/",
-		MaxAge:   -1,
+		MaxAge:   session.Lifetime(),
 		SameSite: http.SameSiteStrictMode,
 	})
 	w.Header().Set("HX-REDIRECT", "/home")
