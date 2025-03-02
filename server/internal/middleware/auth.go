@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gorilla/securecookie"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 )
@@ -36,10 +35,8 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 			return
 		}
 
-		sc := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
-		var cookieValue string
-		println(sessionCookie.Value)
-		if err := sc.Decode(m.sessionCookieName, sessionCookie.Value, &cookieValue); err != nil {
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		if err != nil {
 			slog.Error(err.Error())
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
@@ -88,10 +85,9 @@ func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
 			return
 		}
 
-		sc := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
-		var cookieValue string
-		if err := sc.Decode(m.sessionCookieName, sessionCookie.Value, &cookieValue); err != nil {
-			slog.Error("fuck " + err.Error())
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		if err != nil {
+			slog.Error(err.Error())
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
 			return
 		}

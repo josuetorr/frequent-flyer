@@ -45,8 +45,13 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: encrypt session cookie
 	cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
+	cookieValue, err = utils.EncodeCookie(h.sessionCookieName, cookieValue)
+	if err != nil {
+		slog.Error(err.Error())
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	s := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
 	encoded, err := s.Encode(h.sessionCookieName, cookieValue)

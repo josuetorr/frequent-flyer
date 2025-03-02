@@ -1,16 +1,17 @@
 package utils
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"github.com/gorilla/securecookie"
 )
 
-func GenerateRandomToken() (string, error) {
-	bytes := make([]byte, 32)
-	_, err := rand.Read(bytes)
-	if err != nil {
-		return "", err
-	}
+func EncodeCookie(cookieName string, value string) (string, error) {
+	encoder := securecookie.New([]byte(GetSessionHashKey()), []byte(GetSessionBlockKey()))
+	return encoder.Encode(cookieName, value)
+}
 
-	return hex.EncodeToString(bytes), nil
+func DecodeCookie(cookieName string, cookieValue string) (string, error) {
+	encoder := securecookie.New([]byte(GetSessionHashKey()), []byte(GetSessionBlockKey()))
+	var value string
+	err := encoder.Decode(cookieName, cookieValue, &value)
+	return value, err
 }
