@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/mail"
 
-	"github.com/gorilla/securecookie"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 )
@@ -46,15 +45,7 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
-	cookieValue, err = utils.EncodeCookie(h.sessionCookieName, cookieValue)
-	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
-
-	s := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
-	encoded, err := s.Encode(h.sessionCookieName, cookieValue)
+	encoded, err := utils.EncodeCookie(h.sessionCookieName, cookieValue)
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

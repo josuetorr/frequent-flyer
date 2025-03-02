@@ -92,6 +92,11 @@ func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
 			return
 		}
 		values := strings.Split(cookieValue, ":")
+		if len(values) != 2 {
+			slog.Error(fmt.Sprintf("Invalid session cookie: %+v", values))
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
 
 		sessionID := values[0]
 		userID := values[1]
