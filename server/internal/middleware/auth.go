@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gorilla/securecookie"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 )
 
@@ -34,8 +36,16 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 			return
 		}
 
-		// TODO: decrypt session cookie
-		values := strings.Split(sessionCookie.Value, ":")
+		sc := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
+		var cookieValue string
+		println(sessionCookie.Value)
+		if err := sc.Decode(m.sessionCookieName, sessionCookie.Value, &cookieValue); err != nil {
+			slog.Error(err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+
+		values := strings.Split(cookieValue, ":")
 		if len(values) != 2 {
 			slog.Error(fmt.Sprintf("Invalid session cookie: %+v", values))
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
@@ -78,7 +88,14 @@ func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
 			return
 		}
 
-		values := strings.Split(sessionCookie.Value, ":")
+		sc := securecookie.New([]byte(utils.GetSessionHashKey()), []byte(utils.GetSessionBlockKey()))
+		var cookieValue string
+		if err := sc.Decode(m.sessionCookieName, sessionCookie.Value, &cookieValue); err != nil {
+			slog.Error("fuck " + err.Error())
+			http.Redirect(w, r, "/login", http.StatusUnauthorized)
+			return
+		}
+		values := strings.Split(cookieValue, ":")
 
 		sessionID := values[0]
 		userID := values[1]
