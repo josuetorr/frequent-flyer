@@ -4,9 +4,9 @@ import (
 	"github.com/gorilla/securecookie"
 )
 
-func EncodeCookie(cookieName string, value string) (string, error) {
+func EncodeCookie(cookieName string, cookieValue string) (string, error) {
 	encoder := securecookie.New([]byte(GetSessionHashKey()), []byte(GetSessionBlockKey()))
-	return encoder.Encode(cookieName, value)
+	return encoder.Encode(cookieName, cookieValue)
 }
 
 func DecodeCookie(cookieName string, cookieValue string) (string, error) {
