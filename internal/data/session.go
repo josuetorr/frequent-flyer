@@ -18,8 +18,8 @@ const (
     sessions.user_id,
     sessions.user_agent,
     sessions.ip_address,
-    sessions.create_at,
-    sessions.expired_at,
+    sessions.created_at,
+    sessions.expires_at,
     users.id,
     users.firstname,
     users.lastname,
@@ -27,8 +27,8 @@ const (
     users.deleted_at,
     users.verified
   FROM sessions 
-  JOIN users ON session.user_id = user.id
-  WHERE id = $1 AND user_id = $2
+  JOIN users ON sessions.user_id = users.id
+  WHERE sessions.id = $1 AND sessions.user_id = $2
   `
 	deleteSessionByTokenQuery = "DELETE FROM sessions WHERE token = $1 AND user_id = $2"
 )
@@ -74,6 +74,7 @@ func (r *SessionRepository) GetWithUser(ctx context.Context, sessionID models.ID
 		&s.IpAddr,
 		&s.CreatedAt,
 		&s.ExpiresAt,
+
 		&u.ID,
 		&u.Firstname,
 		&u.Lastname,
