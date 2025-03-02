@@ -1195,6 +1195,9 @@
       }
     }
   }
+  .z-7 {
+    z-index: 7;
+  }
   .filter {
     display: flex;
     flex-wrap: wrap;
@@ -1446,8 +1449,14 @@
   .table {
     display: table;
   }
+  .h-1 {
+    height: calc(var(--spacing) * 1);
+  }
   .h-screen {
     height: 100vh;
+  }
+  .w-8 {
+    width: calc(var(--spacing) * 8);
   }
   .w-96 {
     width: calc(var(--spacing) * 96);

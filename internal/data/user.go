@@ -17,11 +17,6 @@ const (
   SET firstname = $1, lastname = $2, email = $3, verified = $4
   WHERE id = $5
   `
-	updateUserRefreshToken = `
-  UPDATE users
-  SET refresh_token = $1
-  WHERE id =$2
-  `
 	deleteHardUserQuery = "DELETE FROM users WHERE id = $1"
 	deleteSoftUserQuery = `
   UPDATE users

@@ -15,7 +15,7 @@ type (
 		Delete(ctx context.Context, userID models.ID, hard bool) error
 	}
 	SessionRepository interface {
-		Insert(ctx context.Context, session *models.Session) error
+		Insert(ctx context.Context, session *models.Session) (*models.Session, error)
 		GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error)
 		Delete(ctx context.Context, sessionID models.ID, userID models.ID) error
 	}

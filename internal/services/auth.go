@@ -67,7 +67,8 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 		ExpiresAt: time.Now().UTC().Add(weekDuration),
 	}
 
-	if err := s.sessionRepo.Insert(ctx, session); err != nil {
+	session, err = s.sessionRepo.Insert(ctx, session)
+	if err != nil {
 		return nil, err
 	}
 

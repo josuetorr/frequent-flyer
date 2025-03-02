@@ -14,7 +14,7 @@ func NewSessionService(repo SessionRepository) *SessionService {
 	return &SessionService{repo: repo}
 }
 
-func (s *SessionService) Insert(ctx context.Context, session *models.Session) error {
+func (s *SessionService) Insert(ctx context.Context, session *models.Session) (*models.Session, error) {
 	return s.repo.Insert(ctx, session)
 }
 
