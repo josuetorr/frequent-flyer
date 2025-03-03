@@ -72,7 +72,7 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func (m *AuthMiddleware) RedirectIfLogged(next http.Handler) http.Handler {
+func (m *AuthMiddleware) RedirectIfLoggedIn(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		sessionCookie, _ := r.Cookie(m.sessionCookieName)
 
