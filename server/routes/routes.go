@@ -7,6 +7,7 @@ import (
 	cm "github.com/go-chi/chi/middleware"
 	"github.com/josuetorr/frequent-flyer/internal/data"
 	"github.com/josuetorr/frequent-flyer/internal/services"
+	"github.com/josuetorr/frequent-flyer/server/handlers/actions"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"github.com/josuetorr/frequent-flyer/server/handlers/pages"
 	"github.com/josuetorr/frequent-flyer/server/internal/middleware"
@@ -28,7 +29,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	authMw := middleware.NewAuthMiddleware(sessionCookieName, sessionService)
 
 	r.Group(func(r chi.Router) {
-		r.Use(authMw.RedirectIfLogged)
+		r.Use(authMw.RedirectIfLoggedIn)
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", http.StatusFound)
@@ -46,6 +47,8 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Method("GET", "/home", pages.NewHomePageHandler())
 		r.Method("POST", "/logout", forms.NewLogoutHandler(sessionCookieName, authService))
 	})
+
+	r.Method("GET", "/verify-email/{token}", actions.NewEmailVerificationHandler())
 
 	return r
 }
