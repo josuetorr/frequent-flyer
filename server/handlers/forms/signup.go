@@ -56,5 +56,6 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	w.Header().Set("HX-REDIRECT", "/login")
 	w.WriteHeader(http.StatusCreated)
 }
