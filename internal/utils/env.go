@@ -29,3 +29,7 @@ func GetSessionHashKey() string {
 func GetSessionBlockKey() string {
 	return os.Getenv("SESSION_BLOCK_KEY")
 }
+
+func GetAppPort() string {
+	return os.Getenv("APP_PORT")
+}
