@@ -62,5 +62,5 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 }
 
 func GenerateEmailVerificationLink(token string) string {
-	return fmt.Sprintf("%s/%s", utils.GetAppHostURL(), token)
+	return fmt.Sprintf("%s/verify-email/%s", utils.GetAppHostURL(), token)
 }
