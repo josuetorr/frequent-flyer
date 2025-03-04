@@ -12,7 +12,7 @@ type AuthService interface {
 }
 
 type MailService interface {
-	SendVerificationEmail(ctx context.Context, to string) error
+	SendVerificationEmail(ctx context.Context, link string, to string) error
 }
 
 type SessionService interface {

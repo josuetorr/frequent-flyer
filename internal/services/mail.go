@@ -15,12 +15,12 @@ func NewMailService() *MailService {
 	return &MailService{}
 }
 
-func (s *MailService) SendVerificationEmail(ctx context.Context, to string) error {
+func (s *MailService) SendVerificationEmail(ctx context.Context, link string, to string) error {
 	appEmail := utils.GetAppEmail()
 	appEmailPassword := utils.GetAppEmailPassword()
 
 	var body bytes.Buffer
-	emailTemplates.Verification().Render(ctx, &body)
+	emailTemplates.Verification(link).Render(ctx, &body)
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", appEmail)
