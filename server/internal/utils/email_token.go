@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 )
 
 const sep = "."
@@ -58,4 +59,8 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 	}
 
 	return userId, nil
+}
+
+func GenerateEmailVerificationLink(token string) string {
+	return fmt.Sprintf("%s/%s", utils.GetAppHostURL(), token)
 }
