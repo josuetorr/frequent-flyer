@@ -34,6 +34,10 @@ func GetAppPort() string {
 	return os.Getenv("APP_PORT")
 }
 
+func GetAppHostURL() string {
+	return os.Getenv("APP_HOST_URL")
+}
+
 func GetEmailVerificationSecret() string {
 	return os.Getenv("EMAIL_VERIFICATION_SECRET")
 }
