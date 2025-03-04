@@ -1,6 +1,10 @@
 package utils
 
-import "testing"
+import (
+	"fmt"
+	"os"
+	"testing"
+)
 
 func TestValidToken(t *testing.T) {
 	secret := "bob"
@@ -29,5 +33,19 @@ func TestInvalidSignedToken(t *testing.T) {
 
 	if result == expectedUserId {
 		t.Errorf("expected userID: %s. Received: %s. Results should be different", expectedUserId, result)
+	}
+}
+
+func TestLinkGeneration(t *testing.T) {
+	const hostURLEnvValue = "APP_HOST_URL"
+	os.Setenv(hostURLEnvValue, "localhost:3000")
+	secret := "bob"
+	userID := "123"
+	token := GenerateEmailToken(userID, secret)
+	expectedLink := fmt.Sprintf("%s/verify-email/%s", os.Getenv(hostURLEnvValue), token)
+	link := GenerateEmailVerificationLink(token)
+
+	if link != expectedLink {
+		t.Errorf("Expected: %s. Received: %s", expectedLink, link)
 	}
 }
