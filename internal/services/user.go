@@ -33,3 +33,17 @@ func (s *UserService) Update(ctx context.Context, id models.ID, u *models.User) 
 func (s *UserService) Delete(ctx context.Context, id models.ID, hard bool) error {
 	return s.repo.Delete(ctx, id, hard)
 }
+
+func (s *UserService) VerifyUser(ctx context.Context, userID models.ID) error {
+	u, err := s.GetById(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	u.Verified = true
+	if err := s.Update(ctx, userID, u); err != nil {
+		return err
+	}
+
+	return nil
+}

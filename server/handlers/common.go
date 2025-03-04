@@ -6,6 +6,10 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/models"
 )
 
+type UserService interface {
+	VerifyUser(ctx context.Context, userID models.ID) error
+}
+
 type AuthService interface {
 	Signup(ctx context.Context, email string, password string) (models.ID, error)
 	Login(ctx context.Context, email string, password string) (*models.Session, error)

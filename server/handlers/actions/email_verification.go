@@ -7,30 +7,32 @@ import (
 	"github.com/go-chi/chi"
 	au "github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	su "github.com/josuetorr/frequent-flyer/server/internal/utils"
+	et "github.com/josuetorr/frequent-flyer/server/internal/utils/email_token"
 )
 
 type EmailVerificationHandler struct {
-	authService handlers.AuthService
+	userService handlers.UserService
 }
 
-func NewEmailVerificationHandler(authService handlers.AuthService) *EmailVerificationHandler {
+func NewEmailVerificationHandler(userService handlers.UserService) *EmailVerificationHandler {
 	return &EmailVerificationHandler{
-		authService: authService,
+		userService: userService,
 	}
 }
 
 func (h *EmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	token := chi.URLParam(r, "token")
 
-	userID, err := su.VerifyToken(token, au.GetEmailVerificationSecret())
+	userID, err := et.VerifyToken(token, au.GetEmailVerificationSecret())
+	switch err.(type) {
+	}
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Resource not found", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.authService.VerifyUser(r.Context(), userID); err != nil {
+	if err := h.userService.VerifyUser(r.Context(), userID); err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return

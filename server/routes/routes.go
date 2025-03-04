@@ -22,6 +22,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	userRepo := data.NewUserRepository(db)
 	sessionRepo := data.NewSessionRepository(db)
 
+	userService := services.NewUserService(userRepo)
 	authService := services.NewAuthService(userRepo, sessionRepo)
 	sessionService := services.NewSessionService(sessionRepo)
 	mailService := services.NewMailService()
@@ -48,7 +49,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Method("POST", "/logout", forms.NewLogoutHandler(sessionCookieName, authService))
 	})
 
-	r.Method("GET", "/verify-email/{token}", actions.NewEmailVerificationHandler())
+	r.Method("GET", "/verify-email/{token}", actions.NewEmailVerificationHandler(userService))
 
 	return r
 }
