@@ -1,4 +1,4 @@
-package utils
+package emailtoken
 
 import (
 	"crypto/hmac"
