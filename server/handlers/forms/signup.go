@@ -35,7 +35,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if _, err := mail.ParseAddress(email); err != nil {
 		w.Header().Set("HX-FOCUS", "email")
 		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Signup("Invalid email").Render(ctx, w)
+		errorTempl.Alert("Invalid email").Render(ctx, w)
 		return
 	}
 
@@ -44,7 +44,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("HX-FOCUS", "password")
 		w.WriteHeader(http.StatusBadRequest)
 		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
-		errorTempl.Signup(errMsg).Render(ctx, w)
+		errorTempl.Alert(errMsg).Render(ctx, w)
 		return
 	}
 
@@ -52,7 +52,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if password != passwordConfirm {
 		w.Header().Set("HX-FOCUS", "password-confirm")
 		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Signup("Passwords do not match").Render(ctx, w)
+		errorTempl.Alert("Passwords do not match").Render(ctx, w)
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		slog.Error("Error signing up" + err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
+		errorTempl.Alert("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
@@ -70,7 +70,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
 		slog.Error("Error sending verification email" + err.Error())
 		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
+		errorTempl.Alert("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
