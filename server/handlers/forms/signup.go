@@ -55,7 +55,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errMsg := "Passwords do not match"
 		var errBody bytes.Buffer
 		errorTempl.Signup(errMsg).Render(ctx, &errBody)
-		w.Header().Set("HX-FOCUS", "password")
+		w.Header().Set("HX-FOCUS", "password-confirm")
 		http.Error(w, errBody.String(), http.StatusBadRequest)
 		return
 	}
