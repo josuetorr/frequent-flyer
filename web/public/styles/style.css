@@ -1500,6 +1500,11 @@
   .gap-2 {
     gap: calc(var(--spacing) * 2);
   }
+  .alert-error {
+    border-color: var(--color-error);
+    color: var(--color-error-content);
+    --alert-color: var(--color-error);
+  }
   .bg-base-100 {
     background-color: var(--color-base-100);
   }

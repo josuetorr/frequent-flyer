@@ -8,6 +8,7 @@ import (
 
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
+	errorTempl "github.com/josuetorr/frequent-flyer/web/templates/errors"
 )
 
 type SignupPostHandler struct {
@@ -26,35 +27,34 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx := r.Context()
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 	passwordConfirm := r.FormValue("password-confirm")
 
 	const minPasswordLen = 8
 	if len(password) < minPasswordLen {
-		slog.Error(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
-		http.Error(w, "Invalid email", http.StatusBadRequest)
+		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
+		errorTempl.Signup(errMsg).Render(ctx, w)
 		return
 	}
 
 	if _, err := mail.ParseAddress(email); err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Invalid email", http.StatusBadRequest)
+		slog.Error("Invalid email")
+		errorTempl.Signup("Invalid email").Render(ctx, w)
 		return
 	}
 
 	if password != passwordConfirm {
-		errMsg := "Passwords do not match"
-		slog.Error(errMsg)
-		http.Error(w, errMsg, http.StatusBadRequest)
+		slog.Error("Passwords do not match")
+		errorTempl.Signup("Passwords do not match").Render(ctx, w)
 		return
 	}
 
-	ctx := r.Context()
 	userID, err := h.authService.Signup(ctx, email, password)
 	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		slog.Error("Error signing up" + err.Error())
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
@@ -62,10 +62,9 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	link := h.mailService.GenerateEmailVerificationLink(userID, secret)
 
 	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		slog.Error("Error sending verification email" + err.Error())
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
 		return
-
 	}
 
 	w.Header().Set("HX-REDIRECT", "/login")
