@@ -1311,6 +1311,17 @@
       border-block-end: none;
     }
   }
+  .card-body {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    gap: calc(0.25rem * 2);
+    padding: var(--card-p, 1.5rem);
+    font-size: var(--card-fs, 0.875rem);
+    :where(p) {
+      flex-grow: 1;
+    }
+  }
   .label {
     display: inline-flex;
     align-items: center;
@@ -1375,6 +1386,13 @@
     flex-wrap: wrap;
     align-items: flex-start;
     gap: calc(0.25rem * 2);
+  }
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: calc(0.25rem * 2);
+    font-size: var(--cardtitle-fs, 1.125rem);
+    font-weight: 600;
   }
   .join {
     display: inline-flex;

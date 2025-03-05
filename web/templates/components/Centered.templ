@@ -1,0 +1,13 @@
+package components
+
+templ Centered(fullScreen bool) {
+	{{
+	class := "flex justify-center items-center"
+	if fullScreen {
+		class = class + " h-screen"
+	}
+	}}
+	<div class={ class }>
+		{ children... }
+	</div>
+}

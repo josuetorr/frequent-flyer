@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv"
 	"github.com/josuetorr/frequent-flyer/internal/data"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/routes"
 )
 
@@ -31,7 +32,7 @@ func main() {
 	fs := http.FileServer(http.Dir("web/public"))
 	r.Handle("/public/*", http.StripPrefix("/public/", fs))
 
-	port := "3000"
+	port := utils.GetAppPort()
 
 	server := &http.Server{
 		Addr:    ":" + port,

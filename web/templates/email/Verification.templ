@@ -2,8 +2,8 @@ package email
 
 import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
 
-templ Verification() {
+templ Verification(link string) {
 	@layouts.EmailLayout() {
-		test
+		{ link }
 	}
 }

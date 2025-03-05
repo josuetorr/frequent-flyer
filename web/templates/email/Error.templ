@@ -1,0 +1,22 @@
+package email
+
+import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
+import "github.com/josuetorr/frequent-flyer/web/templates/components"
+
+// TODO: update style. This looks like shit. It'll do for now though
+templ Error(errorMessage string) {
+	@layouts.BaseLayout() {
+		@components.Centered(true) {
+			<div class="flex justify-center items-center card bg-base-200 p-2">
+				<h2>Frequent Flyers</h2>
+				<h3>Oops... something went wrong</h3>
+				<p class="card-body">
+					{ errorMessage }
+				</p>
+				<div class="card-actions">
+					<a class="btn bg-base-100" href="/login">Please try to login again</a>
+				</div>
+			</div>
+		}
+	}
+}

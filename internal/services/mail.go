@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 
+	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
+	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 	"gopkg.in/gomail.v2"
 )
@@ -15,12 +17,17 @@ func NewMailService() *MailService {
 	return &MailService{}
 }
 
-func (s *MailService) SendVerificationEmail(ctx context.Context, to string) error {
+func (s *MailService) GenerateEmailVerificationLink(userID models.ID, secret string) string {
+	token := emailtoken.GenerateEmailToken(userID, utils.GetEmailVerificationSecret())
+	return emailtoken.GenerateEmailVerificationLink(token)
+}
+
+func (s *MailService) SendVerificationEmail(ctx context.Context, link string, to string) error {
 	appEmail := utils.GetAppEmail()
 	appEmailPassword := utils.GetAppEmailPassword()
 
 	var body bytes.Buffer
-	emailTemplates.Verification().Render(ctx, &body)
+	emailTemplates.Verification(link).Render(ctx, &body)
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", appEmail)
@@ -28,7 +35,9 @@ func (s *MailService) SendVerificationEmail(ctx context.Context, to string) erro
 	m.SetHeader("Subject", "Account verification")
 	m.SetBody("text/html", body.String())
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, appEmail, appEmailPassword)
+	// NOTE: change later when we get our own smtp server
+	emailHost := "smtp.gmail.com"
+	d := gomail.NewDialer(emailHost, 587, appEmail, appEmailPassword)
 
 	if err := d.DialAndSend(m); err != nil {
 		return err

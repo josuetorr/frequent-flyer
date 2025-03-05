@@ -1,10 +1,12 @@
 package forms
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/mail"
 
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 )
 
@@ -28,6 +30,13 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	passwordConfirm := r.FormValue("password-confirm")
 
+	const minPasswordLen = 8
+	if len(password) < minPasswordLen {
+		slog.Error(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
+		http.Error(w, "Invalid email", http.StatusBadRequest)
+		return
+	}
+
 	if _, err := mail.ParseAddress(email); err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Invalid email", http.StatusBadRequest)
@@ -42,19 +51,23 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err := h.authService.Signup(ctx, email, password)
+	userID, err := h.authService.Signup(ctx, email, password)
 	if err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
 
-	if err := h.mailService.SendVerificationEmail(ctx, email); err != nil {
+	secret := utils.GetEmailVerificationSecret()
+	link := h.mailService.GenerateEmailVerificationLink(userID, secret)
+
+	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
 		slog.Error(err.Error())
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 
 	}
 
+	w.Header().Set("HX-REDIRECT", "/login")
 	w.WriteHeader(http.StatusCreated)
 }
