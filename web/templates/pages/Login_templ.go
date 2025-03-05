@@ -56,7 +56,7 @@ func Login() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-swap=\"none\" hx-post=\"/login\" class=\"flex justify-center items-center card bg-base-200 w-96 shadow-sm gap-2 p-2\"><h2>Frequent Flyers</h2><label class=\"input\"><input type=\"text\" name=\"email\" placeholder=\"email\"></label> <label class=\"input\"><input type=\"password\" name=\"password\" placeholder=\"password\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">login</button></div><p>don't have an account? <a class=\"link-accent\" href=\"/signup\">Signup</a></p></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-swap=\"none\" hx-post=\"/login\" class=\"card bg-base-200 w-96 shadow-sm gap-2 p-2\"><div class=\"card-body flex justify-center items-center \"><h2 class=\"card-title\">Frequent Flyers</h2><label class=\"input\"><input type=\"text\" name=\"email\" placeholder=\"email\"></label> <label class=\"input\"><input type=\"password\" name=\"password\" placeholder=\"password\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">login</button></div><p>don't have an account? <a class=\"link-accent\" href=\"/signup\">Signup</a></p></div></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
