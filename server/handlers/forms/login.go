@@ -8,6 +8,7 @@ import (
 
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
+	"github.com/josuetorr/frequent-flyer/web/templates/errors"
 )
 
 type LoginPostHandler struct {
@@ -27,20 +28,23 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ctx := r.Context()
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
 	_, err = mail.ParseAddress(email)
 	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Invalid email", http.StatusBadRequest)
+		w.Header().Set("HX-FOCUS", "email")
+		w.WriteHeader(http.StatusBadRequest)
+		errors.Alert("Invalid email").Render(ctx, w)
 		return
 	}
 
 	session, err := h.authService.Login(r.Context(), email, password)
 	if err != nil {
 		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		errors.Alert("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
@@ -48,10 +52,12 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	encoded, err := utils.EncodeCookie(h.sessionCookieName, cookieValue)
 	if err != nil {
 		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		errors.Alert("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
+	// TODO: added HTTPs and Secure
 	http.SetCookie(w, &http.Cookie{
 		Name:  h.sessionCookieName,
 		Value: encoded,
