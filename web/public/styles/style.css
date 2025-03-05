@@ -1066,6 +1066,9 @@
       }
     }
   }
+  .fixed {
+    position: fixed;
+  }
   .relative {
     position: relative;
   }
@@ -1195,6 +1198,9 @@
       }
     }
   }
+  .m-9 {
+    margin: calc(var(--spacing) * 9);
+  }
   .filter {
     display: flex;
     flex-wrap: wrap;
@@ -1309,6 +1315,17 @@
     &:not(:last-child) {
       border-inline-end: var(--border) dashed color-mix(in oklab, currentColor 10%, #0000);
       border-block-end: none;
+    }
+  }
+  .card-body {
+    display: flex;
+    flex: auto;
+    flex-direction: column;
+    gap: calc(0.25rem * 2);
+    padding: var(--card-p, 1.5rem);
+    font-size: var(--card-fs, 0.875rem);
+    :where(p) {
+      flex-grow: 1;
     }
   }
   .label {

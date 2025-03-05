@@ -35,7 +35,9 @@ func (s *MailService) SendVerificationEmail(ctx context.Context, link string, to
 	m.SetHeader("Subject", "Account verification")
 	m.SetBody("text/html", body.String())
 
-	d := gomail.NewDialer("smtp.gmail.com", 587, appEmail, appEmailPassword)
+	// NOTE: change later when we get our own smtp server
+	emailHost := "smtp.gmail.com"
+	d := gomail.NewDialer(emailHost, 587, appEmail, appEmailPassword)
 
 	if err := d.DialAndSend(m); err != nil {
 		return err

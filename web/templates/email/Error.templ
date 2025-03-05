@@ -1,0 +1,18 @@
+package email
+
+import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
+import "github.com/josuetorr/frequent-flyer/web/templates/components"
+
+templ Error(errorMessage string) {
+	@layouts.BaseLayout() {
+		@components.Centered(true) {
+			<div class="card">
+				<h2>Oops... something went wrong</h2>
+				<p class="card-body">
+					{ errorMessage }
+				</p>
+				<a class="btn" href="/login">Please try to login again</a>
+			</div>
+		}
+	}
+}
