@@ -6,7 +6,7 @@ import "github.com/josuetorr/frequent-flyer/web/templates/components"
 templ Signup() {
 	@layouts.BaseLayout() {
 		@components.Centered(true) {
-			<form hx-post="/signup" hx-target="error" hx-swap="outerHTML" class="card bg-base-200 w-96 shadow-sm gap-2 p-2">
+			<form hx-post="/signup" hx-target="#error" hx-swap="outerHTML" class="card bg-base-200 w-96 shadow-sm gap-2 p-2">
 				<div class="card-body flex justify-center items-center ">
 					<h2 class="card-title">Frequent Flyers</h2>
 					<div id="error"></div>

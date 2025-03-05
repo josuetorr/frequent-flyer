@@ -32,16 +32,17 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	passwordConfirm := r.FormValue("password-confirm")
 
-	const minPasswordLen = 8
-	if len(password) < minPasswordLen {
-		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
-		errorTempl.Signup(errMsg).Render(ctx, w)
-		return
-	}
-
 	if _, err := mail.ParseAddress(email); err != nil {
 		slog.Error("Invalid email")
 		errorTempl.Signup("Invalid email").Render(ctx, w)
+		return
+	}
+
+	const minPasswordLen = 8
+	if len(password) < minPasswordLen {
+		slog.Error("Password must be at least %d characters long")
+		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
+		errorTempl.Signup(errMsg).Render(ctx, w)
 		return
 	}
 
