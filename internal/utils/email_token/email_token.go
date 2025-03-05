@@ -32,35 +32,33 @@ func GenerateEmailToken(userID models.ID, secret string) string {
 	mac.Write(payload)
 	signature := mac.Sum(nil)
 
-	return base64.StdEncoding.EncodeToString(payload) + tokenSep + base64.StdEncoding.EncodeToString(signature)
+	return base64.StdEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {
+	tokenBytes, err := base64.StdEncoding.DecodeString(token)
+	if err != nil {
+		return "", err
+	}
+	token = string(tokenBytes)
 	parts := strings.Split(token, tokenSep)
 	if len(parts) != 2 {
 		return "", InvalidTokenErr
 	}
 
-	payloadBytes, err := base64.StdEncoding.DecodeString(parts[0])
-	if err != nil {
-		return "", err
-	}
-
-	signature, err := base64.StdEncoding.DecodeString(parts[1])
-	if err != nil {
-		return "", err
-	}
+	payload := parts[0]
+	signature := parts[1]
 
 	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write(payloadBytes)
+	mac.Write([]byte(payload))
 	expectedSignature := mac.Sum(nil)
-	if !hmac.Equal(signature, expectedSignature) {
+	if !hmac.Equal([]byte(signature), expectedSignature) {
 		return "", InvalidSignatureErr
 	}
 
 	var userId models.ID
 	var expiredAt int64
-	if _, err = fmt.Sscanf(strings.Replace(string(payloadBytes), payloadSep, " ", 1), "%s %d", &userId, &expiredAt); err != nil {
+	if _, err = fmt.Sscanf(strings.Replace(payload, payloadSep, " ", 1), "%s %d", &userId, &expiredAt); err != nil {
 		return "", err
 	}
 

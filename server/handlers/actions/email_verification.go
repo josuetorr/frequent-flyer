@@ -48,6 +48,6 @@ func (h *EmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	w.Header().Set("HX-REDIRECT", "/home")
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 	w.WriteHeader(http.StatusNoContent)
 }
