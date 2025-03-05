@@ -34,38 +34,34 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if _, err := mail.ParseAddress(email); err != nil {
-		var errBody bytes.Buffer
-		errorTempl.Signup("Invalid email").Render(ctx, &errBody)
 		w.Header().Set("HX-FOCUS", "email")
-		http.Error(w, errBody.String(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		errorTempl.Signup("Invalid email").Render(ctx, w)
 		return
 	}
 
 	const minPasswordLen = 8
 	if len(password) < minPasswordLen {
-		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
-		var errBody bytes.Buffer
-		errorTempl.Signup(errMsg).Render(ctx, &errBody)
 		w.Header().Add("HX-FOCUS", "password")
-		http.Error(w, errBody.String(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
+		errorTempl.Signup(errMsg).Render(ctx, w)
 		return
 	}
 
+	// TODO: clean this. It's nasty
 	if password != passwordConfirm {
-		errMsg := "Passwords do not match"
-		var errBody bytes.Buffer
-		errorTempl.Signup(errMsg).Render(ctx, &errBody)
 		w.Header().Set("HX-FOCUS", "password-confirm")
-		http.Error(w, errBody.String(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		errorTempl.Signup("Passwords do not match").Render(ctx, w)
 		return
 	}
 
 	userID, err := h.authService.Signup(ctx, email, password)
 	if err != nil {
 		slog.Error("Error signing up" + err.Error())
-		var errBody bytes.Buffer
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, &errBody)
-		http.Error(w, errBody.String(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
@@ -74,9 +70,8 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
 		slog.Error("Error sending verification email" + err.Error())
-		var errBody bytes.Buffer
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, &errBody)
-		http.Error(w, errBody.String(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
 		return
 	}
 
