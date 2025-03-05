@@ -1,10 +1,11 @@
 package templates
 
 import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
+import "github.com/josuetorr/frequent-flyer/web/templates/components"
 
 templ Signup() {
 	@layouts.BaseLayout() {
-		<div class="h-screen flex justify-center items-center">
+		@components.Centered(true) {
 			<form hx-post="/signup" hx-swap="none" class="card bg-base-200 w-96 shadow-sm gap-2 p-2">
 				<div class="card-body flex justify-center items-center ">
 					<h2 class="card-title">Frequent Flyers</h2>
@@ -25,6 +26,6 @@ templ Signup() {
 					</p>
 				</div>
 			</form>
-		</div>
+		}
 	}
 }
