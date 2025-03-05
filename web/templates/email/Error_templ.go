@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
 import "github.com/josuetorr/frequent-flyer/web/templates/components"
 
+// TODO: update style. This looks like shit. It'll do for now though
 func Error(errorMessage string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -56,20 +57,20 @@ func Error(errorMessage string) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"card\"><h2>Oops... something went wrong</h2><p class=\"card-body\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex justify-center items-center card bg-base-200 p-2\"><h2>Frequent Flyers</h2><h3>Oops... something went wrong</h3><p class=\"card-body\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(errorMessage)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/email/Error.templ`, Line: 12, Col: 19}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/email/Error.templ`, Line: 14, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p><a class=\"btn\" href=\"/login\">Please try to login again</a></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</p><div class=\"card-actions\"><a class=\"btn bg-base-100\" href=\"/login\">Please try to login again</a></div></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
