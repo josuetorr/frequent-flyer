@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"net/mail"
@@ -28,6 +29,13 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 	passwordConfirm := r.FormValue("password-confirm")
+
+	const minPasswordLen = 8
+	if len(password) < minPasswordLen {
+		slog.Error(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
+		http.Error(w, "Invalid email", http.StatusBadRequest)
+		return
+	}
 
 	if _, err := mail.ParseAddress(email); err != nil {
 		slog.Error(err.Error())
