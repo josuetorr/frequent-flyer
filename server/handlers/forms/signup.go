@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"bytes"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -33,29 +34,38 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if _, err := mail.ParseAddress(email); err != nil {
-		slog.Error("Invalid email")
-		errorTempl.Signup("Invalid email").Render(ctx, w)
+		var errBody bytes.Buffer
+		errorTempl.Signup("Invalid email").Render(ctx, &errBody)
+		w.Header().Set("HX-FOCUS", "email")
+		http.Error(w, errBody.String(), http.StatusBadRequest)
 		return
 	}
 
 	const minPasswordLen = 8
 	if len(password) < minPasswordLen {
-		slog.Error("Password must be at least %d characters long")
 		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
-		errorTempl.Signup(errMsg).Render(ctx, w)
+		var errBody bytes.Buffer
+		errorTempl.Signup(errMsg).Render(ctx, &errBody)
+		w.Header().Add("HX-FOCUS", "password")
+		http.Error(w, errBody.String(), http.StatusBadRequest)
 		return
 	}
 
 	if password != passwordConfirm {
-		slog.Error("Passwords do not match")
-		errorTempl.Signup("Passwords do not match").Render(ctx, w)
+		errMsg := "Passwords do not match"
+		var errBody bytes.Buffer
+		errorTempl.Signup(errMsg).Render(ctx, &errBody)
+		w.Header().Set("HX-FOCUS", "password")
+		http.Error(w, errBody.String(), http.StatusBadRequest)
 		return
 	}
 
 	userID, err := h.authService.Signup(ctx, email, password)
 	if err != nil {
 		slog.Error("Error signing up" + err.Error())
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
+		var errBody bytes.Buffer
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, &errBody)
+		http.Error(w, errBody.String(), http.StatusInternalServerError)
 		return
 	}
 
@@ -64,7 +74,9 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
 		slog.Error("Error sending verification email" + err.Error())
-		errorTempl.Signup("Oops... something went wrong").Render(ctx, w)
+		var errBody bytes.Buffer
+		errorTempl.Signup("Oops... something went wrong").Render(ctx, &errBody)
+		http.Error(w, errBody.String(), http.StatusInternalServerError)
 		return
 	}
 
