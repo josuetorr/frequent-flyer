@@ -16,6 +16,7 @@ type AuthService interface {
 }
 
 type MailService interface {
+	GenerateEmailVerificationLink(userID models.ID, secret string) string
 	SendVerificationEmail(ctx context.Context, link string, to string) error
 }
 

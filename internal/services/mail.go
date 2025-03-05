@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 
+	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
+	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 	"gopkg.in/gomail.v2"
 )
@@ -13,6 +15,11 @@ type MailService struct{}
 
 func NewMailService() *MailService {
 	return &MailService{}
+}
+
+func (s *MailService) GenerateEmailVerificationLink(userID models.ID, secret string) string {
+	token := emailtoken.GenerateEmailToken(userID, utils.GetEmailVerificationSecret())
+	return emailtoken.GenerateEmailVerificationLink(token)
 }
 
 func (s *MailService) SendVerificationEmail(ctx context.Context, link string, to string) error {

@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"net/mail"
 
-	appUtils "github.com/josuetorr/frequent-flyer/internal/utils"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	serverUtils "github.com/josuetorr/frequent-flyer/server/internal/utils"
 )
 
 type SignupPostHandler struct {
@@ -51,8 +50,8 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := serverUtils.GenerateEmailToken(userID, appUtils.GetEmailVerificationSecret())
-	link := serverUtils.GenerateEmailVerificationLink(token)
+	secret := utils.GetEmailVerificationSecret()
+	link := h.mailService.GenerateEmailVerificationLink(userID, secret)
 
 	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
 		slog.Error(err.Error())
