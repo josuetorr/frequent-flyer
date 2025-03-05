@@ -33,7 +33,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	passwordConfirm := r.FormValue("password-confirm")
 
 	if _, err := mail.ParseAddress(email); err != nil {
-		w.Header().Set("HX-FOCUS", "email")
+		w.Header().Set("HX-FOCUS", "#email")
 		w.WriteHeader(http.StatusBadRequest)
 		errorTempl.Alert("Invalid email").Render(ctx, w)
 		return
@@ -41,7 +41,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	const minPasswordLen = 8
 	if len(password) < minPasswordLen {
-		w.Header().Add("HX-FOCUS", "password")
+		w.Header().Add("HX-FOCUS", "#password")
 		w.WriteHeader(http.StatusBadRequest)
 		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
 		errorTempl.Alert(errMsg).Render(ctx, w)
@@ -50,7 +50,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: clean this. It's nasty
 	if password != passwordConfirm {
-		w.Header().Set("HX-FOCUS", "password-confirm")
+		w.Header().Set("HX-FOCUS", "#password-confirm")
 		w.WriteHeader(http.StatusBadRequest)
 		errorTempl.Alert("Passwords do not match").Render(ctx, w)
 		return

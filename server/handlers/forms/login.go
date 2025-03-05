@@ -34,7 +34,7 @@ func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_, err = mail.ParseAddress(email)
 	if err != nil {
-		w.Header().Set("HX-FOCUS", "email")
+		w.Header().Set("HX-FOCUS", "#email")
 		w.WriteHeader(http.StatusBadRequest)
 		errors.Alert("Invalid email").Render(ctx, w)
 		return
