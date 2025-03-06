@@ -34,18 +34,18 @@ func NewBadRequest(e error, h http.Header, c templ.Component) *AppError {
 	return newAppError(e, http.StatusBadRequest, h, c)
 }
 
-func NewNotFound(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusNotFound, h, c)
+func NewUnauthorized(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusUnauthorized, h, c)
 }
 
-func NewInternalServer(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusInternalServerError, h, c)
+func NewNotFound(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusNotFound, h, c)
 }
 
 func NewUnsupportedMediaType(e error, h http.Header, c templ.Component) *AppError {
 	return newAppError(e, http.StatusUnsupportedMediaType, h, c)
 }
 
-func NewUnauthorized(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusUnauthorized, h, c)
+func NewInternalServer(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusInternalServerError, h, c)
 }
