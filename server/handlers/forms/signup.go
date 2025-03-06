@@ -52,8 +52,8 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 			}
 		}
 
-		secret := utils.GetEmailVerificationSecret()
-		link := mailService.GenerateEmailVerificationLink(userID, secret)
+		secret := utils.GetEmailSecret()
+		link := mailService.GenerateEmailLink(userID, "verify-email", secret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
 			return responder.NewInternalServer(err, errorTempl.Alert("Oops... something went wrong"))

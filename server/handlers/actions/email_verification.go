@@ -17,7 +17,7 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
 
-		userID, err := emailToken.VerifyToken(token, au.GetEmailVerificationSecret())
+		userID, err := emailToken.VerifyToken(token, au.GetEmailSecret())
 		if err != nil {
 			slog.Error(err.Error())
 			switch {

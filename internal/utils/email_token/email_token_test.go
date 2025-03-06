@@ -43,7 +43,7 @@ func TestLinkGeneration(t *testing.T) {
 	userID := "123"
 	token := GenerateEmailToken(userID, secret)
 	expectedLink := fmt.Sprintf("%s/verify-email/%s", os.Getenv(hostURLEnvValue), token)
-	link := GenerateEmailVerificationLink(token)
+	link := GenerateEmailLink("verify-email", token)
 
 	if link != expectedLink {
 		t.Errorf("Expected: %s. Received: %s", expectedLink, link)
