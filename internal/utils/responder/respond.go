@@ -1,4 +1,4 @@
-package utils
+package responder
 
 import (
 	"log/slog"
@@ -6,6 +6,10 @@ import (
 
 	"github.com/a-h/templ"
 )
+
+type Responder interface {
+	Respond(http.ResponseWriter, *http.Request)
+}
 
 type AppError struct {
 	Message    string
@@ -27,6 +31,10 @@ func NewAppError(err error, statusCode int, header http.Header, component templ.
 	}
 }
 
+func (e *AppError) Respond(w http.ResponseWriter, r *http.Request) {
+	respond(w, r, e.Header, e.StatusCode, e.Component)
+}
+
 type AppResponse struct {
 	StatusCode int
 	Header     http.Header
@@ -41,17 +49,21 @@ func NewAppResponse(statusCode int, header http.Header, component templ.Componen
 	}
 }
 
+func (res *AppResponse) Respond(w http.ResponseWriter, r *http.Request) {
+	respond(w, r, res.Header, res.StatusCode, res.Component)
+}
+
 type AppHandler func(http.ResponseWriter, *http.Request) (*AppResponse, *AppError)
 
 func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	res, err := h(w, r)
 	if err != nil {
 		slog.Error(err.Error())
-		respond(w, r, err.Header, err.StatusCode, err.Component)
+		err.Respond(w, r)
 		return
 	}
 
-	respond(w, r, res.Header, res.StatusCode, res.Component)
+	res.Respond(w, r)
 }
 
 func respond(w http.ResponseWriter, r *http.Request, header http.Header, statusCode int, component templ.Component) {
