@@ -51,6 +51,8 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	})
 
 	r.Method("GET", "/verify-email/{token}", actions.HandleEmailVerification(userService))
+	r.Method("GET", "/password-reset", responder.AppHandler(pages.HandleResetPasswordPage))
+	r.Method("GET", "/password-reset/{token}", actions.HandleEmailVerification(userService))
 
 	return r
 }

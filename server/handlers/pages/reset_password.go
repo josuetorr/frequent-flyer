@@ -1,7 +1,13 @@
 package pages
 
-import "github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
+import (
+	"net/http"
 
-func HandleResetPasswordPage() *responder.AppError {
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
+	"github.com/josuetorr/frequent-flyer/web/templates/pages"
+)
+
+func HandleResetPasswordPage(w http.ResponseWriter, r *http.Request) *responder.AppError {
+	responder.NewOk(pages.PasswordReset()).Respond(w, r)
 	return nil
 }
