@@ -11,7 +11,7 @@ type Responder interface {
 	Respond(http.ResponseWriter, *http.Request)
 }
 
-type AppHandler func(http.ResponseWriter, *http.Request) (*AppResponse, *AppError)
+type AppHandler func(http.ResponseWriter, *http.Request) *AppError
 
 func respond(w http.ResponseWriter, r *http.Request, header http.Header, statusCode int, component templ.Component) {
 	header.Write(w)
@@ -25,12 +25,9 @@ func respond(w http.ResponseWriter, r *http.Request, header http.Header, statusC
 }
 
 func (h AppHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	res, err := h(w, r)
-	if err != nil {
+	if err := h(w, r); err != nil {
 		slog.Error(err.Error())
 		err.Respond(w, r)
 		return
 	}
-
-	res.Respond(w, r)
 }

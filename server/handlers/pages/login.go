@@ -3,6 +3,7 @@ package pages
 import (
 	"net/http"
 
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
@@ -14,4 +15,9 @@ func NewLoginPageHandler() *LoginPageHandler {
 
 func (h *LoginPageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	templates.Login().Render(r.Context(), w)
+}
+
+func HandleLoginPage(w http.ResponseWriter, r *http.Request) *responder.AppError {
+	responder.NewOk(nil, templates.Login()).Respond(w, r)
+	return nil
 }
