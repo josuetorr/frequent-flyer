@@ -11,7 +11,9 @@ type SessionService struct {
 }
 
 func NewSessionService(repo SessionRepository) *SessionService {
-	return &SessionService{repo: repo}
+	return &SessionService{
+		repo: repo,
+	}
 }
 
 func (s *SessionService) Insert(ctx context.Context, session *models.Session) (*models.Session, error) {

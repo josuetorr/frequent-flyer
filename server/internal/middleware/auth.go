@@ -23,7 +23,10 @@ type AuthMiddleware struct {
 }
 
 func NewAuthMiddleware(sessionCookieName string, sessionService handlers.SessionService) *AuthMiddleware {
-	return &AuthMiddleware{sessionCookieName: sessionCookieName, sessionService: sessionService}
+	return &AuthMiddleware{
+		sessionCookieName: sessionCookieName,
+		sessionService:    sessionService,
+	}
 }
 
 func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {

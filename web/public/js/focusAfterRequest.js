@@ -1,7 +1,7 @@
 document.body.addEventListener("htmx:afterRequest", (e) => {
-  const elId = e.detail.xhr.getResponseHeader("HX-FOCUS");
-  if (!elId) return;
+  const elSelector = e.detail.xhr.getResponseHeader("HX-FOCUS");
+  if (!elSelector) return;
 
-  const el = document.getElementById(elId);
+  const el = document.querySelector(elSelector);
   el.focus();
 });

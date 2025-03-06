@@ -9,45 +9,34 @@ import (
 	au "github.com/josuetorr/frequent-flyer/internal/utils"
 	emailToken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 )
 
-type EmailVerificationHandler struct {
-	userService handlers.UserService
-}
+func HandleEmailVerification(userService handlers.UserService) responder.AppHandler {
+	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		token := chi.URLParam(r, "token")
 
-func NewEmailVerificationHandler(userService handlers.UserService) *EmailVerificationHandler {
-	return &EmailVerificationHandler{
-		userService: userService,
-	}
-}
-
-func (h *EmailVerificationHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	token := chi.URLParam(r, "token")
-
-	userID, err := emailToken.VerifyToken(token, au.GetEmailVerificationSecret())
-	ctx := r.Context()
-	if err != nil {
-		slog.Error(err.Error())
-		switch {
-		case errors.Is(err, emailToken.InvalidTokenErr):
-			emailTemplates.Error("Invalid token").Render(ctx, w)
-		case errors.Is(err, emailToken.InvalidSignatureErr):
-			emailTemplates.Error("Invalid token").Render(ctx, w)
-		case errors.Is(err, emailToken.ExpiredTokenErr):
-			emailTemplates.Error("Token expired").Render(ctx, w)
-		default:
-			emailTemplates.Error("Internal server error").Render(ctx, w)
+		userID, err := emailToken.VerifyToken(token, au.GetEmailVerificationSecret())
+		if err != nil {
+			slog.Error(err.Error())
+			switch {
+			case errors.Is(err, emailToken.InvalidTokenErr):
+			case errors.Is(err, emailToken.InvalidSignatureErr):
+				return responder.NewBadRequest(err, emailTemplates.Error("Invalid token"))
+			case errors.Is(err, emailToken.ExpiredTokenErr):
+				return responder.NewBadRequest(err, emailTemplates.Error("Token expired"))
+			default:
+				return responder.NewInternalServer(err, emailTemplates.Error("Internal server error"))
+			}
 		}
-		return
-	}
 
-	if err := h.userService.VerifyUser(r.Context(), userID); err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
-		return
-	}
+		if err := userService.VerifyUser(r.Context(), userID); err != nil {
+			return responder.NewInternalServer(err, nil)
+		}
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
-	w.WriteHeader(http.StatusNoContent)
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		w.WriteHeader(http.StatusNoContent)
+		return nil
+	}
 }

@@ -3,15 +3,11 @@ package pages
 import (
 	"net/http"
 
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
-type HomePageHandler struct{}
-
-func NewHomePageHandler() *HomePageHandler {
-	return &HomePageHandler{}
-}
-
-func (h *HomePageHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	templates.Home().Render(r.Context(), w)
+func HandleHomePage(w http.ResponseWriter, r *http.Request) *responder.AppError {
+	responder.NewOk(templates.Home()).Respond(w, r)
+	return nil
 }

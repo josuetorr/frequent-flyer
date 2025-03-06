@@ -11,6 +11,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"github.com/josuetorr/frequent-flyer/server/handlers/pages"
 	"github.com/josuetorr/frequent-flyer/server/internal/middleware"
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 )
 
 func RegisterRoutes(db *data.DBPool) chi.Router {
@@ -35,21 +36,21 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", http.StatusFound)
 		})
-		r.Method("GET", "/login", pages.NewLoginPageHandler())
-		r.Method("POST", "/login", forms.NewLoginHandler(sessionCookieName, authService))
+		r.Method("GET", "/login", responder.AppHandler(pages.HandleLoginPage))
+		r.Method("POST", "/login", forms.HandleLoginForm(sessionCookieName, authService))
 
-		r.Method("GET", "/signup", pages.NewSignupPageHandler())
-		r.Method("POST", "/signup", forms.NewSignupHandler(authService, mailService))
+		r.Method("GET", "/signup", responder.AppHandler(pages.HandleSignupPage))
+		r.Method("POST", "/signup", forms.HandleSignupForm(authService, mailService))
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMw.Authorized)
 
-		r.Method("GET", "/home", pages.NewHomePageHandler())
-		r.Method("POST", "/logout", forms.NewLogoutHandler(sessionCookieName, authService))
+		r.Method("GET", "/home", responder.AppHandler(pages.HandleHomePage))
+		r.Method("POST", "/logout", forms.HandleLogout(sessionCookieName))
 	})
 
-	r.Method("GET", "/verify-email/{token}", actions.NewEmailVerificationHandler(userService))
+	r.Method("GET", "/verify-email/{token}", actions.HandleEmailVerification(userService))
 
 	return r
 }

@@ -11,19 +11,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	InvalidCredentialError = errors.New("Invalid credentials")
+	UserAlreadyExistsError = errors.New("User already exists")
+)
+
 type AuthService struct {
 	userRepo    UserRepository
 	sessionRepo SessionRepository
 }
 
 func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *AuthService {
-	return &AuthService{userRepo: userRepo, sessionRepo: sessionRepo}
+	return &AuthService{
+		userRepo:    userRepo,
+		sessionRepo: sessionRepo,
+	}
 }
 
 func (s *AuthService) Signup(ctx context.Context, email string, password string) (models.ID, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
-		return "", errors.New("User already exists")
+		return "", UserAlreadyExistsError
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -52,12 +60,12 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	u, err := s.userRepo.GetByEmail(ctx, email)
 	if err != nil {
 		slog.Error("Could not find user with given email: " + email)
-		return nil, errors.New("Invalid credentials")
+		return nil, InvalidCredentialError
 	}
 
 	if err := utils.ComparePassword(u.Password, password); err != nil {
 		slog.Error("Invalid password: " + password)
-		return nil, errors.New("Invalid credentials")
+		return nil, InvalidCredentialError
 	}
 
 	weekDuration := time.Hour * 24 * 7

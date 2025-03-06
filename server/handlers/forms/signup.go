@@ -1,79 +1,66 @@
 package forms
 
 import (
+	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/mail"
 
+	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	errorTempl "github.com/josuetorr/frequent-flyer/web/templates/errors"
 )
 
-type SignupPostHandler struct {
-	authService handlers.AuthService
-	mailService handlers.MailService
-}
+func HandleSignupForm(authService handlers.AuthService, mailService handlers.MailService) responder.AppHandler {
+	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		if err := r.ParseForm(); err != nil {
+			return responder.NewBadRequest(err, nil)
+		}
 
-func NewSignupHandler(authService handlers.AuthService, mailService handlers.MailService) *SignupPostHandler {
-	return &SignupPostHandler{authService: authService, mailService: mailService}
-}
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+		passwordConfirm := r.FormValue("password-confirm")
 
-func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Form error", http.StatusBadRequest)
-		return
+		if _, err := mail.ParseAddress(email); err != nil {
+			w.Header().Set("HX-FOCUS", "#email")
+			return responder.NewBadRequest(err, errorTempl.Alert("Invalid email"))
+		}
+
+		const minPasswordLen = 8
+		if len(password) < minPasswordLen {
+			err := errors.New(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
+			w.Header().Set("HX-FOCUS", "#password")
+			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+		}
+
+		if password != passwordConfirm {
+			err := errors.New("Passwords do not match")
+			w.Header().Set("HX-FOCUS", "#password-confirm")
+			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+		}
+
+		ctx := r.Context()
+		userID, err := authService.Signup(ctx, email, password)
+		if err != nil {
+			switch {
+			case errors.Is(err, services.UserAlreadyExistsError):
+				return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+			default:
+				return responder.NewInternalServer(err, errorTempl.Alert("Oops... something went wrong"))
+			}
+		}
+
+		secret := utils.GetEmailVerificationSecret()
+		link := mailService.GenerateEmailVerificationLink(userID, secret)
+
+		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
+			return responder.NewInternalServer(err, errorTempl.Alert("Oops... something went wrong"))
+		}
+
+		w.Header().Set("HX-REDIRECT", "/login")
+		w.WriteHeader(http.StatusCreated)
+		return nil
 	}
-
-	ctx := r.Context()
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	passwordConfirm := r.FormValue("password-confirm")
-
-	if _, err := mail.ParseAddress(email); err != nil {
-		w.Header().Set("HX-FOCUS", "email")
-		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Alert("Invalid email").Render(ctx, w)
-		return
-	}
-
-	const minPasswordLen = 8
-	if len(password) < minPasswordLen {
-		w.Header().Add("HX-FOCUS", "password")
-		w.WriteHeader(http.StatusBadRequest)
-		errMsg := fmt.Sprintf("Password must be at least %d characters long", minPasswordLen)
-		errorTempl.Alert(errMsg).Render(ctx, w)
-		return
-	}
-
-	// TODO: clean this. It's nasty
-	if password != passwordConfirm {
-		w.Header().Set("HX-FOCUS", "password-confirm")
-		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Alert("Passwords do not match").Render(ctx, w)
-		return
-	}
-
-	userID, err := h.authService.Signup(ctx, email, password)
-	if err != nil {
-		slog.Error("Error signing up" + err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		errorTempl.Alert("Oops... something went wrong").Render(ctx, w)
-		return
-	}
-
-	secret := utils.GetEmailVerificationSecret()
-	link := h.mailService.GenerateEmailVerificationLink(userID, secret)
-
-	if err := h.mailService.SendVerificationEmail(ctx, link, email); err != nil {
-		slog.Error("Error sending verification email" + err.Error())
-		w.WriteHeader(http.StatusBadRequest)
-		errorTempl.Alert("Oops... something went wrong").Render(ctx, w)
-		return
-	}
-
-	w.Header().Set("HX-REDIRECT", "/login")
-	w.WriteHeader(http.StatusCreated)
 }

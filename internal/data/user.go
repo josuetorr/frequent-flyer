@@ -30,7 +30,9 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *DBPool) *UserRepository {
-	return &UserRepository{db: db}
+	return &UserRepository{
+		db: db,
+	}
 }
 
 func (r *UserRepository) Insert(ctx context.Context, u *models.User) error {

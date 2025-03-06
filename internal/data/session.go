@@ -38,7 +38,9 @@ type SessionRepository struct {
 }
 
 func NewSessionRepository(db *DBPool) *SessionRepository {
-	return &SessionRepository{db: db}
+	return &SessionRepository{
+		db: db,
+	}
 }
 
 func (r *SessionRepository) Insert(ctx context.Context, s *models.Session) (*models.Session, error) {
