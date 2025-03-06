@@ -8,6 +8,6 @@ import (
 )
 
 func HandleLoginPage(w http.ResponseWriter, r *http.Request) *responder.AppError {
-	responder.NewOk(nil, templates.Login()).Respond(w, r)
+	responder.NewOk(templates.Login()).Respond(w, r)
 	return nil
 }

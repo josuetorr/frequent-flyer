@@ -13,8 +13,7 @@ type Responder interface {
 
 type AppHandler func(http.ResponseWriter, *http.Request) *AppError
 
-func respond(w http.ResponseWriter, r *http.Request, header http.Header, statusCode int, component templ.Component) {
-	header.Write(w)
+func respond(w http.ResponseWriter, r *http.Request, statusCode int, component templ.Component) {
 	w.WriteHeader(statusCode)
 	if component != nil {
 		// NOTE: what do we do if we get an error here?

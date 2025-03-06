@@ -8,6 +8,6 @@ import (
 )
 
 func HandleSignupPage(w http.ResponseWriter, r *http.Request) *responder.AppError {
-	responder.NewOk(nil, templates.Signup()).Respond(w, r)
+	responder.NewOk(templates.Signup()).Respond(w, r)
 	return nil
 }

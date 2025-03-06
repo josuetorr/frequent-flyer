@@ -9,7 +9,6 @@ import (
 type AppError struct {
 	Message    string
 	StatusCode int
-	Header     http.Header
 	Component  templ.Component
 }
 
@@ -18,34 +17,33 @@ func (err AppError) Error() string {
 }
 
 func (e *AppError) Respond(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.Header, e.StatusCode, e.Component)
+	respond(w, r, e.StatusCode, e.Component)
 }
 
-func newAppError(e error, sc int, h http.Header, c templ.Component) *AppError {
+func newAppError(e error, sc int, c templ.Component) *AppError {
 	return &AppError{
 		Message:    e.Error(),
 		StatusCode: sc,
-		Header:     h,
 		Component:  c,
 	}
 }
 
-func NewBadRequest(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusBadRequest, h, c)
+func NewBadRequest(e error, c templ.Component) *AppError {
+	return newAppError(e, http.StatusBadRequest, c)
 }
 
-func NewUnauthorized(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusUnauthorized, h, c)
+func NewUnauthorized(e error, c templ.Component) *AppError {
+	return newAppError(e, http.StatusUnauthorized, c)
 }
 
-func NewNotFound(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusNotFound, h, c)
+func NewNotFound(e error, c templ.Component) *AppError {
+	return newAppError(e, http.StatusNotFound, c)
 }
 
-func NewUnsupportedMediaType(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusUnsupportedMediaType, h, c)
+func NewUnsupportedMediaType(e error, c templ.Component) *AppError {
+	return newAppError(e, http.StatusUnsupportedMediaType, c)
 }
 
-func NewInternalServer(e error, h http.Header, c templ.Component) *AppError {
-	return newAppError(e, http.StatusInternalServerError, h, c)
+func NewInternalServer(e error, c templ.Component) *AppError {
+	return newAppError(e, http.StatusInternalServerError, c)
 }

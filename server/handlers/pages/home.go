@@ -8,6 +8,6 @@ import (
 )
 
 func HandleHomePage(w http.ResponseWriter, r *http.Request) *responder.AppError {
-	responder.NewOk(nil, templates.Home()).Respond(w, r)
+	responder.NewOk(templates.Home()).Respond(w, r)
 	return nil
 }

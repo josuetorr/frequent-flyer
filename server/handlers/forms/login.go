@@ -18,16 +18,16 @@ func HandleLoginForm(sessionCookieName string, authService handlers.AuthService)
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		if err := r.ParseForm(); err != nil {
 			slog.Error(err.Error())
-			return responder.NewBadRequest(err, nil, nil)
+			return responder.NewBadRequest(err, nil)
 		}
 
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
 		if _, err := mail.ParseAddress(email); err != nil {
+			w.Header().Set("HX-FOCUS", "#email")
 			return responder.NewBadRequest(
 				err,
-				http.Header{"HX-FOCUS": []string{"#email"}},
 				errorTempl.Alert("Invalid email"),
 			)
 		}
@@ -36,17 +36,17 @@ func HandleLoginForm(sessionCookieName string, authService handlers.AuthService)
 		if err != nil {
 			switch {
 			case errors.Is(err, services.InvalidCredentialError):
-				return responder.NewBadRequest(err, nil, errorTempl.Alert(err.Error()))
+				return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
 			default:
 				slog.Error(err.Error())
-				return responder.NewInternalServer(err, nil, errorTempl.Alert("Oops... something whent wrong"))
+				return responder.NewInternalServer(err, errorTempl.Alert("Oops... something whent wrong"))
 			}
 		}
 
 		cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
 		encoded, err := utils.EncodeCookie(sessionCookieName, cookieValue)
 		if err != nil {
-			return responder.NewInternalServer(err, nil, errorTempl.Alert("Oops... something whent wrong"))
+			return responder.NewInternalServer(err, errorTempl.Alert("Oops... something whent wrong"))
 		}
 
 		// TODO: added HTTPs and Secure
