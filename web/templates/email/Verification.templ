@@ -4,6 +4,8 @@ import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
 
 templ Verification(link string) {
 	@layouts.EmailLayout() {
-		{ link }
+		<p>
+			Here is your verification link: <a href={ link }>{ link }</a>
+		</p>
 	}
 }
