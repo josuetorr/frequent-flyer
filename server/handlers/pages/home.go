@@ -7,7 +7,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
-func HandleHomePage(w http.ResponseWriter, r *http.Request) *responder.AppError {
+func HandleHome(w http.ResponseWriter, r *http.Request) *responder.AppError {
 	responder.NewOk(pages.Home()).Respond(w, r)
 	return nil
 }

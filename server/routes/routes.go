@@ -36,23 +36,25 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/login", http.StatusFound)
 		})
-		r.Method("GET", "/login", responder.AppHandler(pages.HandleLoginPage))
+		r.Method("GET", "/login", responder.AppHandler(pages.HandleLogin))
 		r.Method("POST", "/login", forms.HandleLoginForm(sessionCookieName, authService))
 
-		r.Method("GET", "/signup", responder.AppHandler(pages.HandleSignupPage))
+		r.Method("GET", "/signup", responder.AppHandler(pages.HandleSignup))
 		r.Method("POST", "/signup", forms.HandleSignupForm(authService, mailService))
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMw.Authorized)
 
-		r.Method("GET", "/home", responder.AppHandler(pages.HandleHomePage))
+		r.Method("GET", "/home", responder.AppHandler(pages.HandleHome))
 		r.Method("POST", "/logout", forms.HandleLogout(sessionCookieName))
 	})
 
 	r.Method("GET", "/verify-email/{token}", actions.HandleEmailVerification(userService))
-	r.Method("GET", "/password-reset", responder.AppHandler(pages.HandleResetPasswordPage))
-	r.Method("GET", "/password-reset/{token}", actions.HandleEmailVerification(userService))
+	r.Method("GET", "/password-reset", responder.AppHandler(pages.HandlePasswordReset))
+	// r.Method("POST", "/password-reset", forms.HandlePasswordResetEmailSubmission())
+	// r.Method("GET", "/password-reset/{token}", pages.HandlePasswordResetSubmission())
+	// r.Method("POST", "/password-reset/{token}", forms.HandlePasswordResetSubmission())
 
 	return r
 }

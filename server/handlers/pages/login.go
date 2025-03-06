@@ -7,7 +7,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
-func HandleLoginPage(w http.ResponseWriter, r *http.Request) *responder.AppError {
+func HandleLogin(w http.ResponseWriter, r *http.Request) *responder.AppError {
 	responder.NewOk(pages.Login()).Respond(w, r)
 	return nil
 }
