@@ -1,75 +1,67 @@
 package forms
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"net/mail"
 
+	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
-	"github.com/josuetorr/frequent-flyer/web/templates/errors"
+	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
+	errorTempl "github.com/josuetorr/frequent-flyer/web/templates/errors"
 )
 
-type LoginPostHandler struct {
-	sessionCookieName string
-	authService       handlers.AuthService
-}
+func HandleLoginForm(sessionCookieName string, authService handlers.AuthService) responder.AppHandler {
+	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		if err := r.ParseForm(); err != nil {
+			slog.Error(err.Error())
+			return responder.NewBadRequest(err, nil, nil)
+		}
 
-func NewLoginHandler(sessionCookieName string, authService handlers.AuthService) *LoginPostHandler {
-	return &LoginPostHandler{
-		sessionCookieName: sessionCookieName,
-		authService:       authService,
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+
+		if _, err := mail.ParseAddress(email); err != nil {
+			return responder.NewBadRequest(
+				err,
+				http.Header{"HX-FOCUS": []string{"#email"}},
+				errorTempl.Alert("Invalid email"),
+			)
+		}
+
+		session, err := authService.Login(r.Context(), email, password)
+		if err != nil {
+			switch {
+			case errors.Is(err, services.InvalidCredentialError):
+				return responder.NewBadRequest(err, nil, errorTempl.Alert(err.Error()))
+			default:
+				slog.Error(err.Error())
+				return responder.NewInternalServer(err, nil, errorTempl.Alert("Oops... something whent wrong"))
+			}
+		}
+
+		cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
+		encoded, err := utils.EncodeCookie(sessionCookieName, cookieValue)
+		if err != nil {
+			return responder.NewInternalServer(err, nil, errorTempl.Alert("Oops... something whent wrong"))
+		}
+
+		// TODO: added HTTPs and Secure
+		http.SetCookie(w, &http.Cookie{
+			Name:  sessionCookieName,
+			Value: encoded,
+			// HttpOnly: true,
+			// Secure:   true,
+			Path:     "/",
+			MaxAge:   session.Lifetime(),
+			SameSite: http.SameSiteStrictMode,
+		})
+
+		w.Header().Set("HX-REDIRECT", "/home")
+		w.WriteHeader(http.StatusOK)
+		return nil
 	}
-}
-
-func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		slog.Error(err.Error())
-		http.Error(w, "Form error", http.StatusBadRequest)
-		return
-	}
-
-	ctx := r.Context()
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-
-	_, err = mail.ParseAddress(email)
-	if err != nil {
-		w.Header().Set("HX-FOCUS", "#email")
-		w.WriteHeader(http.StatusBadRequest)
-		errors.Alert("Invalid email").Render(ctx, w)
-		return
-	}
-
-	session, err := h.authService.Login(r.Context(), email, password)
-	if err != nil {
-		slog.Error(err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		errors.Alert("Oops... something went wrong").Render(ctx, w)
-		return
-	}
-
-	cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
-	encoded, err := utils.EncodeCookie(h.sessionCookieName, cookieValue)
-	if err != nil {
-		slog.Error(err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		errors.Alert("Oops... something went wrong").Render(ctx, w)
-		return
-	}
-
-	// TODO: added HTTPs and Secure
-	http.SetCookie(w, &http.Cookie{
-		Name:  h.sessionCookieName,
-		Value: encoded,
-		// HttpOnly: true,
-		// Secure:   true,
-		Path:     "/",
-		MaxAge:   session.Lifetime(),
-		SameSite: http.SameSiteStrictMode,
-	})
-	w.Header().Set("HX-REDIRECT", "/home")
-	w.WriteHeader(http.StatusOK)
 }

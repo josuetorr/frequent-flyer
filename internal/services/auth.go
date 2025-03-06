@@ -11,7 +11,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var InvalidCredentialError = errors.New("Invalid credentials")
+var (
+	InvalidCredentialError = errors.New("Invalid credentials")
+	UserAlreadyExistsError = errors.New("User already exists")
+)
 
 type AuthService struct {
 	userRepo    UserRepository
@@ -28,7 +31,7 @@ func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *Aut
 func (s *AuthService) Signup(ctx context.Context, email string, password string) (models.ID, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
-		return "", errors.New("User already exists")
+		return "", UserAlreadyExistsError
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
