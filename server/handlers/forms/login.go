@@ -26,10 +26,7 @@ func HandleLoginForm(sessionCookieName string, authService handlers.AuthService)
 
 		if _, err := mail.ParseAddress(email); err != nil {
 			w.Header().Set("HX-FOCUS", "#email")
-			return responder.NewBadRequest(
-				err,
-				errorTempl.Alert("Invalid email"),
-			)
+			return responder.NewBadRequest(err, errorTempl.Alert("Invalid email"))
 		}
 
 		session, err := authService.Login(r.Context(), email, password)

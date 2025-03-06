@@ -25,29 +25,20 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 
 		if _, err := mail.ParseAddress(email); err != nil {
 			w.Header().Set("HX-FOCUS", "#email")
-			return responder.NewBadRequest(
-				err,
-				errorTempl.Alert("Invalid email"),
-			)
+			return responder.NewBadRequest(err, errorTempl.Alert("Invalid email"))
 		}
 
 		const minPasswordLen = 8
 		if len(password) < minPasswordLen {
 			err := errors.New(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
 			w.Header().Set("HX-FOCUS", "#password")
-			return responder.NewBadRequest(
-				err,
-				errorTempl.Alert(err.Error()),
-			)
+			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
 		}
 
 		if password != passwordConfirm {
 			err := errors.New("Passwords do not match")
 			w.Header().Set("HX-FOCUS", "#password-confirm")
-			return responder.NewBadRequest(
-				err,
-				errorTempl.Alert(err.Error()),
-			)
+			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
 		}
 
 		ctx := r.Context()
