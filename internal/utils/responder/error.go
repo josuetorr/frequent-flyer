@@ -17,15 +17,35 @@ func (err AppError) Error() string {
 	return err.Message
 }
 
-func NewAppError(err error, statusCode int, header http.Header, component templ.Component) *AppError {
+func (e *AppError) Respond(w http.ResponseWriter, r *http.Request) {
+	respond(w, r, e.Header, e.StatusCode, e.Component)
+}
+
+func newAppError(e error, sc int, h http.Header, c templ.Component) *AppError {
 	return &AppError{
-		Message:    err.Error(),
-		StatusCode: statusCode,
-		Header:     header,
-		Component:  component,
+		Message:    e.Error(),
+		StatusCode: sc,
+		Header:     h,
+		Component:  c,
 	}
 }
 
-func (e *AppError) Respond(w http.ResponseWriter, r *http.Request) {
-	respond(w, r, e.Header, e.StatusCode, e.Component)
+func NewBadRequest(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusBadRequest, h, c)
+}
+
+func NewNotFound(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusNotFound, h, c)
+}
+
+func NewInternalServer(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusInternalServerError, h, c)
+}
+
+func NewUnsupportedMediaType(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusUnsupportedMediaType, h, c)
+}
+
+func NewUnauthorized(e error, h http.Header, c templ.Component) *AppError {
+	return newAppError(e, http.StatusUnauthorized, h, c)
 }
