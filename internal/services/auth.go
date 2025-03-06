@@ -17,7 +17,10 @@ type AuthService struct {
 }
 
 func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *AuthService {
-	return &AuthService{userRepo: userRepo, sessionRepo: sessionRepo}
+	return &AuthService{
+		userRepo:    userRepo,
+		sessionRepo: sessionRepo,
+	}
 }
 
 func (s *AuthService) Signup(ctx context.Context, email string, password string) (models.ID, error) {

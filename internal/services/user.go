@@ -11,7 +11,9 @@ type UserService struct {
 }
 
 func NewUserService(repo UserRepository) *UserService {
-	return &UserService{repo: repo}
+	return &UserService{
+		repo: repo,
+	}
 }
 
 func (s *UserService) Insert(ctx context.Context, user *models.User) error {

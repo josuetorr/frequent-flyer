@@ -17,7 +17,10 @@ type LoginPostHandler struct {
 }
 
 func NewLoginHandler(sessionCookieName string, authService handlers.AuthService) *LoginPostHandler {
-	return &LoginPostHandler{sessionCookieName: sessionCookieName, authService: authService}
+	return &LoginPostHandler{
+		sessionCookieName: sessionCookieName,
+		authService:       authService,
+	}
 }
 
 func (h *LoginPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

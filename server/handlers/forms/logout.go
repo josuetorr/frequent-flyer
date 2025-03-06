@@ -12,7 +12,10 @@ type LogoutPostHandler struct {
 }
 
 func NewLogoutHandler(sessionCookieName string, authService handlers.AuthService) *LogoutPostHandler {
-	return &LogoutPostHandler{sessionCookieName: sessionCookieName, authService: authService}
+	return &LogoutPostHandler{
+		sessionCookieName: sessionCookieName,
+		authService:       authService,
+	}
 }
 
 // NOTE: Let's keep the session. This way when the user logs back, we can fetch their

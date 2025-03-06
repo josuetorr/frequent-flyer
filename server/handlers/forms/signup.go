@@ -17,7 +17,10 @@ type SignupPostHandler struct {
 }
 
 func NewSignupHandler(authService handlers.AuthService, mailService handlers.MailService) *SignupPostHandler {
-	return &SignupPostHandler{authService: authService, mailService: mailService}
+	return &SignupPostHandler{
+		authService: authService,
+		mailService: mailService,
+	}
 }
 
 func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +42,7 @@ func (h *SignupPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: write error utils
 	const minPasswordLen = 8
 	if len(password) < minPasswordLen {
 		w.Header().Add("HX-FOCUS", "#password")
