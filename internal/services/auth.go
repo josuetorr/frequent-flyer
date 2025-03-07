@@ -34,7 +34,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		return "", UserAlreadyExistsError
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hash, err := utils.HashPassword(password)
 	if err != nil {
 		return "", err
 	}
