@@ -36,7 +36,7 @@ func GenerateEmailToken(userID models.ID, secret string) string {
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {
-	tokenBytes, err := base64.StdEncoding.DecodeString(token)
+	tokenBytes, err := base64.URLEncoding.DecodeString(token)
 	if err != nil {
 		return "", InvalidTokenErr
 	}
