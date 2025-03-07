@@ -2,6 +2,29 @@ package components
 
 import "fmt"
 
-templ Alert(message string, severity string) {
-	<p id="error" role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft w-full", severity) }>{ message }</p>
+type Severity string
+
+var InfoSeverity Severity = "info"
+var SuccessSeverity Severity = "success"
+var WarningSeverity Severity = "warning"
+var ErrorSeverity Severity = "error"
+
+templ alert(message string, severity Severity) {
+	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft w-full", severity) }>{ message }</p>
+}
+
+templ AlertInfo(message string) {
+	@alert(message, InfoSeverity)
+}
+
+templ AlertSuccess(message string) {
+	@alert(message, SuccessSeverity)
+}
+
+templ AlertWarning(message string) {
+	@alert(message, WarningSeverity)
+}
+
+templ AlertError(message string) {
+	@alert(message, ErrorSeverity)
 }
