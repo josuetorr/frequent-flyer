@@ -36,7 +36,7 @@ func HandlePasswordResetSubmission(userService handlers.UserService) responder.A
 			return responder.NewNotFound(err, components.AlertError("User not found"))
 		}
 
-		responder.NewOk(pages.PasswordReset()).Respond(w, r)
+		responder.NewOk(pages.PasswordReset(token)).Respond(w, r)
 		return nil
 	}
 }

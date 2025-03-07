@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 )
 
 type UserService struct {
@@ -57,7 +57,7 @@ func (s *UserService) UpdatePassword(ctx context.Context, id models.ID, newPassw
 		return err
 	}
 
-	hashed, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	hashed, err := utils.HashPassword(newPassword)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,6 @@ import (
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var (
