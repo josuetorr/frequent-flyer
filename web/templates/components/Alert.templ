@@ -1,0 +1,7 @@
+package components
+
+import "fmt"
+
+templ Alert(message string, severity string) {
+	<p id="error" role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft w-full", severity) }>{ message }</p>
+}
