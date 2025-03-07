@@ -33,7 +33,6 @@ func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailSe
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong whilst sending email"))
 		}
 
-		// TODO: move "Alert" to components instead of "errors"
 		responder.NewOk(components.AlertSuccess("Email has been sent")).Respond(w, r)
 		return nil
 	}
