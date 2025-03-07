@@ -9,8 +9,15 @@ var SuccessSeverity Severity = "success"
 var WarningSeverity Severity = "warning"
 var ErrorSeverity Severity = "error"
 
+var alertClasses = map[Severity]string{
+	InfoSeverity:    "alert-info",
+	SuccessSeverity: "alert-success",
+	WarningSeverity: "alert-warning",
+	ErrorSeverity:   "alert-error",
+}
+
 templ alert(severity Severity) {
-	{{ class := fmt.Sprintf("alert alert-%s alert-soft", severity) }}
+	{{ class := fmt.Sprintf("alert %s alert-soft", alertClasses[severity]) }}
 	<p role="alert" class={ class }>
 		{ children... }
 	</p>

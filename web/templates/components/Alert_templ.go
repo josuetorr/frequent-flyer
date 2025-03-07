@@ -17,6 +17,13 @@ var SuccessSeverity Severity = "success"
 var WarningSeverity Severity = "warning"
 var ErrorSeverity Severity = "error"
 
+var alertClasses = map[Severity]string{
+	InfoSeverity:    "alert-info",
+	SuccessSeverity: "alert-success",
+	WarningSeverity: "alert-warning",
+	ErrorSeverity:   "alert-error",
+}
+
 func alert(severity Severity) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -38,7 +45,7 @@ func alert(severity Severity) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		class := fmt.Sprintf("alert alert-%s alert-soft", severity)
+		class := fmt.Sprintf("alert %s alert-soft", alertClasses[severity])
 		var templ_7745c5c3_Var2 = []any{class}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
@@ -109,7 +116,7 @@ func AlertInfo(message string) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 21, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 28, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -161,7 +168,7 @@ func AlertSuccess(message string) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 27, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 34, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -213,7 +220,7 @@ func AlertWarning(message string) templ.Component {
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 33, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 40, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -265,7 +272,7 @@ func AlertError(message string) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 39, Col: 11}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `web/templates/components/Alert.templ`, Line: 46, Col: 11}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
