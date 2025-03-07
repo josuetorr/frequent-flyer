@@ -8,6 +8,7 @@ import (
 
 type UserService interface {
 	VerifyUser(ctx context.Context, userID models.ID) error
+	GetById(ctx context.Context, id models.ID) (*models.User, error)
 	GetByEmail(ctx context.Context, email string) (*models.User, error)
 }
 

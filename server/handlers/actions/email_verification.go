@@ -21,8 +21,8 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 		if err != nil {
 			slog.Error(err.Error())
 			switch {
-			case errors.Is(err, emailtoken.InvalidTokenErr):
-			case errors.Is(err, emailtoken.InvalidSignatureErr):
+			case errors.Is(err, emailtoken.InvalidTokenErr),
+				errors.Is(err, emailtoken.InvalidSignatureErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Invalid token"))
 			case errors.Is(err, emailtoken.ExpiredTokenErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Token expired"))

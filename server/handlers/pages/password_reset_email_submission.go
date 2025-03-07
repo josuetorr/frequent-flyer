@@ -8,6 +8,6 @@ import (
 )
 
 func HandlePasswordResetEmailSubmission(w http.ResponseWriter, r *http.Request) *responder.AppError {
-	responder.NewOk(pages.PasswordReset()).Respond(w, r)
+	responder.NewOk(pages.PasswordResetEmail()).Respond(w, r)
 	return nil
 }
