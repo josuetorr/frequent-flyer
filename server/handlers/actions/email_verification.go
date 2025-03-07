@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	au "github.com/josuetorr/frequent-flyer/internal/utils"
-	emailToken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
+	"github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
@@ -17,14 +17,14 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
 
-		userID, err := emailToken.VerifyToken(token, au.GetEmailSecret())
+		userID, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
 		if err != nil {
 			slog.Error(err.Error())
 			switch {
-			case errors.Is(err, emailToken.InvalidTokenErr):
-			case errors.Is(err, emailToken.InvalidSignatureErr):
+			case errors.Is(err, emailtoken.InvalidTokenErr):
+			case errors.Is(err, emailtoken.InvalidSignatureErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Invalid token"))
-			case errors.Is(err, emailToken.ExpiredTokenErr):
+			case errors.Is(err, emailtoken.ExpiredTokenErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Token expired"))
 			default:
 				return responder.NewInternalServer(err, emailTemplates.Error("Internal server error"))
