@@ -11,7 +11,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
-	errorTempl "github.com/josuetorr/frequent-flyer/web/templates/errors"
+	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
 func HandleLoginForm(sessionCookieName string, authService handlers.AuthService) responder.AppHandler {
@@ -26,24 +26,24 @@ func HandleLoginForm(sessionCookieName string, authService handlers.AuthService)
 
 		if _, err := mail.ParseAddress(email); err != nil {
 			w.Header().Set("HX-FOCUS", "#email")
-			return responder.NewBadRequest(err, errorTempl.Alert("Invalid email"))
+			return responder.NewBadRequest(err, components.AlertError("Invalid email"))
 		}
 
 		session, err := authService.Login(r.Context(), email, password)
 		if err != nil {
 			switch {
 			case errors.Is(err, services.InvalidCredentialError):
-				return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+				return responder.NewBadRequest(err, components.AlertError(err.Error()))
 			default:
 				slog.Error(err.Error())
-				return responder.NewInternalServer(err, errorTempl.Alert("Oops... something whent wrong"))
+				return responder.NewInternalServer(err, components.AlertError("Oops... something whent wrong"))
 			}
 		}
 
 		cookieValue := fmt.Sprintf("%s:%s", session.ID, session.UserID)
 		encoded, err := utils.EncodeCookie(sessionCookieName, cookieValue)
 		if err != nil {
-			return responder.NewInternalServer(err, errorTempl.Alert("Oops... something whent wrong"))
+			return responder.NewInternalServer(err, components.AlertError("Oops... something whent wrong"))
 		}
 
 		// TODO: added HTTPs and Secure

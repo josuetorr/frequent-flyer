@@ -10,7 +10,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
-	errorTempl "github.com/josuetorr/frequent-flyer/web/templates/errors"
+	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
 func HandleSignupForm(authService handlers.AuthService, mailService handlers.MailService) responder.AppHandler {
@@ -25,20 +25,20 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 
 		if _, err := mail.ParseAddress(email); err != nil {
 			w.Header().Set("HX-FOCUS", "#email")
-			return responder.NewBadRequest(err, errorTempl.Alert("Invalid email"))
+			return responder.NewBadRequest(err, components.AlertError("Invalid email"))
 		}
 
 		const minPasswordLen = 8
 		if len(password) < minPasswordLen {
 			err := errors.New(fmt.Sprintf("Password must be at least %d characters long", minPasswordLen))
 			w.Header().Set("HX-FOCUS", "#password")
-			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+			return responder.NewBadRequest(err, components.AlertError(err.Error()))
 		}
 
 		if password != passwordConfirm {
 			err := errors.New("Passwords do not match")
 			w.Header().Set("HX-FOCUS", "#password-confirm")
-			return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+			return responder.NewBadRequest(err, components.AlertError(err.Error()))
 		}
 
 		ctx := r.Context()
@@ -46,9 +46,9 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 		if err != nil {
 			switch {
 			case errors.Is(err, services.UserAlreadyExistsError):
-				return responder.NewBadRequest(err, errorTempl.Alert(err.Error()))
+				return responder.NewBadRequest(err, components.AlertError(err.Error()))
 			default:
-				return responder.NewInternalServer(err, errorTempl.Alert("Oops... something went wrong"))
+				return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong"))
 			}
 		}
 
@@ -56,7 +56,7 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 		link := mailService.GenerateEmailLink(userID, "verify-email", secret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
-			return responder.NewInternalServer(err, errorTempl.Alert("Oops... something went wrong"))
+			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong"))
 		}
 
 		w.Header().Set("HX-REDIRECT", "/login")
