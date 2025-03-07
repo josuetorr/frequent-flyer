@@ -30,7 +30,7 @@ func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailSe
 
 		link := mailService.GenerateEmailLink(u.ID, "password-reset", utils.GetEmailSecret())
 		if err := mailService.SendPasswordResetEmail(ctx, link, email); err != nil {
-			return responder.NewInternalServer(err, components.AlertError("Oops... something went from whilst sending email"))
+			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong whilst sending email"))
 		}
 
 		// TODO: move "Alert" to components instead of "errors"
