@@ -49,3 +49,17 @@ func (s *UserService) VerifyUser(ctx context.Context, userID models.ID) error {
 
 	return nil
 }
+
+func (s *UserService) UpdatePassword(ctx context.Context, id models.ID, newHashedPassword string) error {
+	u, err := s.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	u.Password = newHashedPassword
+	if err := s.Update(ctx, id, u); err != nil {
+		return err
+	}
+
+	return nil
+}
