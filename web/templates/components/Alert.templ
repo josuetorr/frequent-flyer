@@ -9,22 +9,32 @@ var SuccessSeverity Severity = "success"
 var WarningSeverity Severity = "warning"
 var ErrorSeverity Severity = "error"
 
-templ alert(message string, severity Severity) {
-	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft", severity) }>{ message }</p>
+templ alert(severity Severity) {
+	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft", severity) }>
+		{ children... }
+	</p>
 }
 
 templ AlertInfo(message string) {
-	@alert(message, InfoSeverity)
+	@alert(InfoSeverity) {
+		{ message }
+	}
 }
 
 templ AlertSuccess(message string) {
-	@alert(message, SuccessSeverity)
+	@alert(SuccessSeverity) {
+		{ message }
+	}
 }
 
 templ AlertWarning(message string) {
-	@alert(message, WarningSeverity)
+	@alert(WarningSeverity) {
+		{ message }
+	}
 }
 
 templ AlertError(message string) {
-	@alert(message, ErrorSeverity)
+	@alert(ErrorSeverity) {
+		{ message }
+	}
 }
