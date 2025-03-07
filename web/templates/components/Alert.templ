@@ -10,7 +10,7 @@ var WarningSeverity Severity = "warning"
 var ErrorSeverity Severity = "error"
 
 templ alert(message string, severity Severity) {
-	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft w-full", severity) }>{ message }</p>
+	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft", severity) }>{ message }</p>
 }
 
 templ AlertInfo(message string) {
