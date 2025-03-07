@@ -10,6 +10,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
+	"github.com/josuetorr/frequent-flyer/web/templates/components"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 )
 
@@ -31,6 +32,10 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 			}
 		}
 
+		u, err := userService.GetById(r.Context(), userID)
+		if err != nil || u == nil {
+			return responder.NewNotFound(err, components.AlertError("User not found"))
+		}
 		if err := userService.VerifyUser(r.Context(), userID); err != nil {
 			return responder.NewInternalServer(err, nil)
 		}
