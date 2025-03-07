@@ -10,7 +10,8 @@ var WarningSeverity Severity = "warning"
 var ErrorSeverity Severity = "error"
 
 templ alert(severity Severity) {
-	<p role="alert" class={ fmt.Sprintf("alert alert-%s alert-soft", severity) }>
+	{{ class := fmt.Sprintf("alert alert-%s alert-soft", severity) }}
+	<p role="alert" class={ class }>
 		{ children... }
 	</p>
 }
