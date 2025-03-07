@@ -34,7 +34,7 @@ func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailSe
 		}
 
 		// TODO: move "Alert" to components instead of "errors"
-		responder.NewOk(components.AlertError("Email has been sent")).Respond(w, r)
+		responder.NewOk(components.AlertSuccess("Email has been sent")).Respond(w, r)
 		return nil
 	}
 }
