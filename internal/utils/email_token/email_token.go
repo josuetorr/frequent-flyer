@@ -32,7 +32,7 @@ func GenerateEmailToken(userID models.ID, secret string) string {
 	mac.Write(payload)
 	signature := mac.Sum(nil)
 
-	return base64.StdEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
+	return base64.URLEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {
