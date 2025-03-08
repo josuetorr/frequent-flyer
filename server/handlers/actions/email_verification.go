@@ -41,7 +41,6 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 		}
 
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		w.WriteHeader(http.StatusNoContent)
 		return nil
 	}
 }
