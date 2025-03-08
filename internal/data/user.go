@@ -14,8 +14,8 @@ const (
 	selectRefreshTokenQuery = "SELECT refresh_token FROM users WHERE id = $1"
 	updateUserQuery         = `
   UPDATE users
-  SET firstname = $1, lastname = $2, email = $3, verified = $4
-  WHERE id = $5
+  SET firstname = $1, lastname = $2, email = $3, verified = $4, password = $5
+  WHERE id = $6
   `
 	deleteHardUserQuery = "DELETE FROM users WHERE id = $1"
 	deleteSoftUserQuery = `
@@ -76,7 +76,7 @@ func (r *UserRepository) GetByEmail(ctx context.Context, email models.ID) (*mode
 }
 
 func (r *UserRepository) Update(ctx context.Context, id models.ID, u *models.User) error {
-	_, err := r.db.Exec(ctx, updateUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified, id)
+	_, err := r.db.Exec(ctx, updateUserQuery, u.Firstname, u.Lastname, u.Email, u.Verified, u.Password, id)
 	return err
 }
 

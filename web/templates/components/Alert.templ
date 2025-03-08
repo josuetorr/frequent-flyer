@@ -1,0 +1,53 @@
+package components
+
+import "fmt"
+import "github.com/josuetorr/frequent-flyer/web/templates/icons"
+
+type Severity string
+
+var InfoSeverity Severity = "info"
+var SuccessSeverity Severity = "success"
+var WarningSeverity Severity = "warning"
+var ErrorSeverity Severity = "error"
+
+var alertClasses = map[Severity]string{
+	InfoSeverity:    "alert-info",
+	SuccessSeverity: "alert-success",
+	WarningSeverity: "alert-warning",
+	ErrorSeverity:   "alert-error",
+}
+
+templ alert(severity Severity) {
+	{{ class := fmt.Sprintf("alert %s alert-soft", alertClasses[severity]) }}
+	<p role="alert" class={ class }>
+		{ children... }
+	</p>
+}
+
+templ AlertInfo(message string) {
+	@alert(InfoSeverity) {
+		@icons.Info()
+		{ message }
+	}
+}
+
+templ AlertSuccess(message string) {
+	@alert(SuccessSeverity) {
+		@icons.Success()
+		{ message }
+	}
+}
+
+templ AlertWarning(message string) {
+	@alert(WarningSeverity) {
+		@icons.Warning()
+		{ message }
+	}
+}
+
+templ AlertError(message string) {
+	@alert(ErrorSeverity) {
+		@icons.Error()
+		{ message }
+	}
+}

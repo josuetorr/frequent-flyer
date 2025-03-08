@@ -1,8 +1,7 @@
-package actions
+package pages
 
 import (
 	"errors"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -12,15 +11,15 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
+	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
-func HandleEmailVerification(userService handlers.UserService) responder.AppHandler {
+func HandlePasswordResetSubmission(userService handlers.UserService) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
 
 		userID, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
 		if err != nil {
-			slog.Error(err.Error())
 			switch {
 			case errors.Is(err, emailtoken.InvalidTokenErr),
 				errors.Is(err, emailtoken.InvalidSignatureErr):
@@ -36,12 +35,8 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 		if err != nil || u == nil {
 			return responder.NewNotFound(err, components.AlertError("User not found"))
 		}
-		if err := userService.VerifyUser(r.Context(), userID); err != nil {
-			return responder.NewInternalServer(err, nil)
-		}
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		w.WriteHeader(http.StatusNoContent)
+		responder.NewOk(pages.PasswordReset(token)).Respond(w, r)
 		return nil
 	}
 }

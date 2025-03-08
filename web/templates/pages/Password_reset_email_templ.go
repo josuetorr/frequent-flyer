@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import "github.com/josuetorr/frequent-flyer/web/templates/layouts"
 import "github.com/josuetorr/frequent-flyer/web/templates/components"
 
-func Signup() templ.Component {
+func PasswordResetEmail() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -56,7 +56,7 @@ func Signup() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-post=\"/signup\" hx-target=\"#error\" class=\"card bg-base-200 w-96 shadow-sm gap-2 p-2\"><div class=\"card-body flex justify-center items-center \"><h2 class=\"card-title\">Frequent Flyers</h2><div id=\"error\" class=\"w-full\"></div><label class=\"input\"><input id=\"email\" type=\"email\" name=\"email\" placeholder=\"email\"></label> <label class=\"input\"><input id=\"password\" type=\"password\" name=\"password\" placeholder=\"password\"></label> <label class=\"input\"><input id=\"password-confirm\" type=\"password\" name=\"password-confirm\" placeholder=\"confirm password\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">Signup</button></div><p>already have an account? <a class=\"link-accent\" href=\"/login\">Login</a></p></div></form>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<form hx-post=\"/password-reset-email\" hx-target=\"#response\" class=\"card bg-base-200 w-96 shadow-sm gap-2 p-2\"><div class=\"card-body flex justify-center items-center \"><h2 class=\"card-title\">Frequent Flyers</h2><div id=\"response\" class=\"w-full\"></div><p>You will receive an email with a link to enter your new password</p><label class=\"input\"><input id=\"email\" type=\"email\" name=\"email\" placeholder=\"email\"></label><div class=\"card-actions\"><button type=\"submit\" class=\"btn bg-base-100\">submit</button></div></div></form>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

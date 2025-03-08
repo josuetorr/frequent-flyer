@@ -7,7 +7,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/web/templates/pages"
 )
 
-func HandleSignup(w http.ResponseWriter, r *http.Request) *responder.AppError {
-	responder.NewOk(pages.Signup()).Respond(w, r)
+func HandlePasswordResetEmailSubmission(w http.ResponseWriter, r *http.Request) *responder.AppError {
+	responder.NewOk(pages.PasswordResetEmail()).Respond(w, r)
 	return nil
 }

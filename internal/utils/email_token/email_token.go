@@ -32,13 +32,13 @@ func GenerateEmailToken(userID models.ID, secret string) string {
 	mac.Write(payload)
 	signature := mac.Sum(nil)
 
-	return base64.StdEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
+	return base64.URLEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {
-	tokenBytes, err := base64.StdEncoding.DecodeString(token)
+	tokenBytes, err := base64.URLEncoding.DecodeString(token)
 	if err != nil {
-		return "", err
+		return "", InvalidTokenErr
 	}
 	token = string(tokenBytes)
 	parts := strings.Split(token, tokenSep)
@@ -69,6 +69,6 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 	return userId, nil
 }
 
-func GenerateEmailVerificationLink(token string) string {
-	return fmt.Sprintf("%s/verify-email/%s", utils.GetAppHostURL(), token)
+func GenerateEmailLink(endpoint string, token string) string {
+	return fmt.Sprintf("%s/%s/%s", utils.GetAppHostURL(), endpoint, token)
 }

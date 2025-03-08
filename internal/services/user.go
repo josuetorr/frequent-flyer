@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 )
 
 type UserService struct {
@@ -44,6 +45,25 @@ func (s *UserService) VerifyUser(ctx context.Context, userID models.ID) error {
 
 	u.Verified = true
 	if err := s.Update(ctx, userID, u); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) UpdatePassword(ctx context.Context, id models.ID, newPassword string) error {
+	u, err := s.GetById(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	hashed, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(hashed)
+	if err := s.Update(ctx, id, u); err != nil {
 		return err
 	}
 

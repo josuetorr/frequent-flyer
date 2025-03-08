@@ -8,6 +8,9 @@ import (
 
 type UserService interface {
 	VerifyUser(ctx context.Context, userID models.ID) error
+	GetById(ctx context.Context, id models.ID) (*models.User, error)
+	GetByEmail(ctx context.Context, email string) (*models.User, error)
+	UpdatePassword(ctx context.Context, id models.ID, newPassword string) error
 }
 
 type AuthService interface {
@@ -16,8 +19,9 @@ type AuthService interface {
 }
 
 type MailService interface {
-	GenerateEmailVerificationLink(userID models.ID, secret string) string
+	GenerateEmailLink(userID models.ID, endpoint string, secret string) string
 	SendVerificationEmail(ctx context.Context, link string, to string) error
+	SendPasswordResetEmail(ctx context.Context, link string, to string) error
 }
 
 type SessionService interface {
