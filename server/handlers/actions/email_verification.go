@@ -2,7 +2,6 @@ package actions
 
 import (
 	"errors"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -20,7 +19,6 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 
 		userID, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
 		if err != nil {
-			slog.Error(err.Error())
 			switch {
 			case errors.Is(err, emailtoken.InvalidTokenErr),
 				errors.Is(err, emailtoken.InvalidSignatureErr):
