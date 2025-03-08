@@ -1,16 +1,18 @@
-package emailtoken
+package emailtoken_test
 
 import (
 	"fmt"
 	"os"
 	"testing"
+
+	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 )
 
 func TestValidToken(t *testing.T) {
 	secret := "bob"
 	expectedUserId := "123"
-	token := GenerateEmailToken(expectedUserId, secret)
-	result, err := VerifyToken(token, secret)
+	token := emailtoken.GenerateEmailToken(expectedUserId, secret)
+	result, err := emailtoken.VerifyToken(token, secret)
 	if err != nil {
 		t.Error(err)
 	}
@@ -25,8 +27,8 @@ func TestInvalidSignedToken(t *testing.T) {
 	invalidSecret := "obo"
 	expectedUserId := "123"
 
-	token := GenerateEmailToken(expectedUserId, secret)
-	result, err := VerifyToken(token, invalidSecret)
+	token := emailtoken.GenerateEmailToken(expectedUserId, secret)
+	result, err := emailtoken.VerifyToken(token, invalidSecret)
 	if err == nil {
 		t.Error("Verify should have returning an error since signatures should not match")
 	}
@@ -41,9 +43,9 @@ func TestLinkGeneration(t *testing.T) {
 	os.Setenv(hostURLEnvValue, "localhost:3000")
 	secret := "bob"
 	userID := "123"
-	token := GenerateEmailToken(userID, secret)
+	token := emailtoken.GenerateEmailToken(userID, secret)
 	expectedLink := fmt.Sprintf("%s/verify-email/%s", os.Getenv(hostURLEnvValue), token)
-	link := GenerateEmailLink("verify-email", token)
+	link := emailtoken.GenerateEmailLink("verify-email", token)
 
 	if link != expectedLink {
 		t.Errorf("Expected: %s. Received: %s", expectedLink, link)
