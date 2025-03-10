@@ -8,11 +8,13 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"go.uber.org/mock/gomock"
 )
 
+// TODO: Test failures
+// TODO: Use a setup func
+// TODO: Add a common flow for endpoints (not sure what flow to use yet)
 func TestHandleEmailVerification_Successful(t *testing.T) {
 	// setup
 	testUser := &models.User{ID: "123"}
@@ -27,7 +29,7 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 
 	r := chi.NewRouter()
 	r.Get("/verify-email/{token}", HandleEmailVerification(mockUserService).ServeHTTP)
-	token := emailtoken.GenerateEmailToken("123", utils.GetEmailSecret())
+	token := utils.GenerateToken("123", utils.GetEmailSecret())
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
 

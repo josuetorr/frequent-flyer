@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
@@ -15,7 +14,7 @@ import (
 func HandlePasswordResetSubmission(userService handlers.UserService) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
-		userId, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
+		userId, err := utils.VerifyToken(token, utils.GetEmailSecret())
 		if err != nil {
 			return responder.NewNotFound(err, nil)
 		}

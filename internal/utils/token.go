@@ -1,4 +1,4 @@
-package emailtoken
+package utils
 
 import (
 	"crypto/hmac"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
-	"github.com/josuetorr/frequent-flyer/internal/utils"
 )
 
 const (
@@ -74,5 +73,5 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 }
 
 func GenerateEmailLink(endpoint string, token string) string {
-	return fmt.Sprintf("%s/%s/%s", utils.GetAppHostURL(), endpoint, token)
+	return fmt.Sprintf("%s/%s/%s", GetAppHostURL(), endpoint, token)
 }
