@@ -11,7 +11,7 @@ import (
 func TestValidToken(t *testing.T) {
 	secret := "bob"
 	expectedUserId := "123"
-	token := emailtoken.GenerateEmailToken(expectedUserId, secret)
+	token := emailtoken.GenerateToken(expectedUserId, secret)
 	result, err := emailtoken.VerifyToken(token, secret)
 	if err != nil {
 		t.Error(err)
@@ -27,7 +27,7 @@ func TestInvalidSignedToken(t *testing.T) {
 	invalidSecret := "obo"
 	expectedUserId := "123"
 
-	token := emailtoken.GenerateEmailToken(expectedUserId, secret)
+	token := emailtoken.GenerateToken(expectedUserId, secret)
 	result, err := emailtoken.VerifyToken(token, invalidSecret)
 	if err == nil {
 		t.Error("Verify should have returning an error since signatures should not match")
@@ -43,7 +43,7 @@ func TestLinkGeneration(t *testing.T) {
 	os.Setenv(hostURLEnvValue, "localhost:3000")
 	secret := "bob"
 	userID := "123"
-	token := emailtoken.GenerateEmailToken(userID, secret)
+	token := emailtoken.GenerateToken(userID, secret)
 	expectedLink := fmt.Sprintf("%s/verify-email/%s", os.Getenv(hostURLEnvValue), token)
 	link := emailtoken.GenerateEmailLink("verify-email", token)
 

@@ -24,8 +24,7 @@ var (
 	ExpiredTokenErr     = errors.New("Expired token")
 )
 
-func GenerateEmailToken(userID models.ID, secret string) string {
-	expiresAt := time.Now().Add(time.Minute * 15).Unix()
+func GenerateTokenWithExpiration(userID models.ID, expiresAt int, secret string) string {
 	payload := fmt.Appendf([]byte{}, "%s%s%d", userID, payloadSep, expiresAt)
 
 	mac := hmac.New(sha256.New, []byte(secret))
@@ -33,6 +32,11 @@ func GenerateEmailToken(userID models.ID, secret string) string {
 	signature := mac.Sum(nil)
 
 	return base64.URLEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
+}
+
+func GenerateToken(userID models.ID, secret string) string {
+	expiresAt := time.Now().Add(time.Minute * 15).Unix()
+	return GenerateTokenWithExpiration(userID, int(expiresAt), secret)
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {

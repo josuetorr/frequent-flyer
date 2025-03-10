@@ -18,7 +18,7 @@ func NewMailService() *MailService {
 }
 
 func (s *MailService) GenerateEmailLink(userID models.ID, endpoint string, secret string) string {
-	token := emailtoken.GenerateEmailToken(userID, utils.GetEmailSecret())
+	token := emailtoken.GenerateToken(userID, utils.GetEmailSecret())
 	return emailtoken.GenerateEmailLink(endpoint, token)
 }
 
