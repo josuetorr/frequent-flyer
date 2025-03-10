@@ -39,5 +39,5 @@ func GetAppHostURL() string {
 }
 
 func GetTokenSecret() string {
-	return os.Getenv("EMAIL_SECRET")
+	return os.Getenv("TOKEN_SECRET")
 }
