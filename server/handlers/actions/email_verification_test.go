@@ -1,4 +1,4 @@
-package actions
+package actions_test
 
 import (
 	"net/http"
@@ -9,6 +9,7 @@ import (
 	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
+	"github.com/josuetorr/frequent-flyer/server/handlers/actions"
 	"go.uber.org/mock/gomock"
 )
 
@@ -28,7 +29,7 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 		Return(nil)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	token := utils.GenerateToken("123", utils.GetEmailSecret())
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
