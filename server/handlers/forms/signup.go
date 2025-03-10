@@ -52,7 +52,7 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 			}
 		}
 
-		secret := utils.GetEmailSecret()
+		secret := utils.GetTokenSecret()
 		link := mailService.GenerateEmailLink(userID, "verify-email", secret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {

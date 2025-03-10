@@ -14,7 +14,7 @@ import (
 func HandlePasswordResetSubmission(userService handlers.UserService) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
-		userId, err := utils.VerifyToken(token, utils.GetEmailSecret())
+		userId, err := utils.VerifyToken(token, utils.GetTokenSecret())
 		if err != nil {
 			return responder.NewNotFound(err, nil)
 		}

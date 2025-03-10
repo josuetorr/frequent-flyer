@@ -38,6 +38,6 @@ func GetAppHostURL() string {
 	return os.Getenv("APP_HOST_URL")
 }
 
-func GetEmailSecret() string {
+func GetTokenSecret() string {
 	return os.Getenv("EMAIL_SECRET")
 }

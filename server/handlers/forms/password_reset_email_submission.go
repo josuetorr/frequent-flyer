@@ -28,7 +28,7 @@ func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailSe
 			return responder.NewBadRequest(err, components.AlertError("User not found"))
 		}
 
-		link := mailService.GenerateEmailLink(u.ID, "password-reset", utils.GetEmailSecret())
+		link := mailService.GenerateEmailLink(u.ID, "password-reset", utils.GetTokenSecret())
 		if err := mailService.SendPasswordResetEmail(ctx, link, email); err != nil {
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong whilst sending email"))
 		}
