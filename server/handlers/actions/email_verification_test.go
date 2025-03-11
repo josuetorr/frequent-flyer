@@ -46,7 +46,10 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 
 func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	// setup
-	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
+	userId := models.ID("123")
+	expiresIn := time.Millisecond
+	tokenSecret := "this is an invalid signature"
+	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -62,7 +65,10 @@ func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 
 func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 	// setup
-	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
+	userId := models.ID("123")
+	expiresIn := time.Millisecond
+	tokenSecret := "this is an invalid signature"
+	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -78,7 +84,10 @@ func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 
 func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	// setup
-	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
+	userId := models.ID("123")
+	expiresIn := time.Millisecond
+	tokenSecret := "this is an invalid signature"
+	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -95,7 +104,10 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 // NOTE: we are here
 func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	// setup
-	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
+	userId := models.ID("123")
+	expiresIn := time.Millisecond
+	tokenSecret := "this is an invalid signature"
+	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
