@@ -7,6 +7,7 @@ import (
 	cm "github.com/go-chi/chi/middleware"
 	"github.com/josuetorr/frequent-flyer/internal/data"
 	"github.com/josuetorr/frequent-flyer/internal/services"
+	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/handlers/actions"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"github.com/josuetorr/frequent-flyer/server/handlers/pages"
@@ -34,27 +35,27 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Use(authMw.RedirectIfLoggedIn)
 
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			http.Redirect(w, r, handlers.LoginEndpoint, http.StatusFound)
 		})
-		r.Method("GET", "/login", responder.AppHandler(pages.HandleLogin))
-		r.Method("POST", "/login", forms.HandleLoginForm(sessionCookieName, authService))
+		r.Method("GET", handlers.LoginEndpoint, responder.AppHandler(pages.HandleLogin))
+		r.Method("POST", handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, authService))
 
-		r.Method("GET", "/signup", responder.AppHandler(pages.HandleSignup))
-		r.Method("POST", "/signup", forms.HandleSignupForm(authService, mailService))
+		r.Method("GET", handlers.SignupEndpoint, responder.AppHandler(pages.HandleSignup))
+		r.Method("POST", handlers.SignupEndpoint, forms.HandleSignupForm(authService, mailService))
 	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMw.Authorized)
 
-		r.Method("GET", "/home", responder.AppHandler(pages.HandleHome))
-		r.Method("POST", "/logout", forms.HandleLogout(sessionCookieName))
+		r.Method("GET", handlers.HomeEndpoint, responder.AppHandler(pages.HandleHome))
+		r.Method("POST", handlers.LogoutEndpoint, forms.HandleLogout(sessionCookieName))
 	})
 
-	r.Method("GET", "/verify-email/{token}", actions.HandleEmailVerification(userService))
-	r.Method("GET", "/password-reset-email", responder.AppHandler(pages.HandlePasswordResetEmailSubmission))
-	r.Method("POST", "/password-reset-email", forms.HandlePasswordResetEmailSubmission(userService, mailService))
-	r.Method("GET", "/password-reset/{token}", pages.HandlePasswordResetSubmission(userService))
-	r.Method("POST", "/password-reset/{token}", forms.HandlePasswordResetSubmission(userService))
+	r.Method("GET", handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(userService))
+	r.Method("GET", handlers.PasswordResetEmailSubmissionEndpoint, responder.AppHandler(pages.HandlePasswordResetEmailSubmission))
+	r.Method("POST", handlers.PasswordResetEmailSubmissionEndpoint, forms.HandlePasswordResetEmailSubmission(userService, mailService))
+	r.Method("GET", handlers.PasswordResetEndpoint+"/{token}", pages.HandlePasswordResetSubmission(userService))
+	r.Method("POST", handlers.PasswordResetEndpoint+"/{token}", forms.HandlePasswordResetSubmission(userService))
 
 	return r
 }
