@@ -46,12 +46,7 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 
 func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	// setup
-	ctrl := gomock.NewController(t)
-	mockUserService := handlers.NewMockUserService(ctrl)
-
-	r := chi.NewRouter()
-	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
-	token := "thisisaninvalidtoken"
+	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -67,12 +62,7 @@ func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 
 func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 	// setup
-	ctrl := gomock.NewController(t)
-	mockUserService := handlers.NewMockUserService(ctrl)
-
-	r := chi.NewRouter()
-	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
-	token := utils.GenerateToken("123", "this is an invalid signature")
+	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -88,13 +78,7 @@ func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 
 func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	// setup
-	ctrl := gomock.NewController(t)
-	mockUserService := handlers.NewMockUserService(ctrl)
-
-	r := chi.NewRouter()
-	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
-	expiresAt := time.Now().Add(time.Microsecond).Unix()
-	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
+	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -111,10 +95,7 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 // NOTE: we are here
 func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	// setup
-	r := setup(t, nil)
-
-	expiresAt := time.Now().Add(time.Microsecond).Unix()
-	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
+	r, token := setup(t, "123", time.Microsecond, "this is an invalid signature", nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -130,11 +111,17 @@ func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 
 type MockConfigFunc func(handlers.UserService) *handlers.MockUserService
 
-func setup(t *testing.T, fn MockConfigFunc) chi.Router {
+func setup(t *testing.T, userId models.ID, expiration time.Duration, tokenSecret string, fn MockConfigFunc) (chi.Router, string) {
 	ctrl := gomock.NewController(t)
 	mockUserService := handlers.NewMockUserService(ctrl)
-	mockUserService = fn(mockUserService)
+	if fn != nil {
+		mockUserService = fn(mockUserService)
+	}
+
+	expiresAt := time.Now().Add(expiration).Unix()
+	token := utils.GenerateTokenWithExpiration(userId, expiresAt, tokenSecret)
+
 	r := chi.NewRouter()
 	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
-	return r
+	return r, token
 }
