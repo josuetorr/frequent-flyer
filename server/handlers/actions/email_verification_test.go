@@ -112,7 +112,6 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	}
 }
 
-// NOTE: we are here
 func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	// setup
 	userId := models.ID("123")
