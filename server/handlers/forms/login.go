@@ -57,7 +57,7 @@ func HandleLoginForm(sessionCookieName string, authService handlers.AuthService)
 			SameSite: http.SameSiteStrictMode,
 		})
 
-		w.Header().Set("HX-REDIRECT", "/home")
+		w.Header().Set("HX-REDIRECT", handlers.HomeEndpoint)
 		w.WriteHeader(http.StatusOK)
 		return nil
 	}

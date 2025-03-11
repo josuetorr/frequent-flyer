@@ -37,7 +37,7 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 			return responder.NewInternalServer(err, nil)
 		}
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		http.Redirect(w, r, handlers.LoginEndpoint, http.StatusSeeOther)
 		return nil
 	}
 }

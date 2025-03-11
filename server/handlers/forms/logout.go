@@ -3,6 +3,7 @@ package forms
 import (
 	"net/http"
 
+	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 )
 
@@ -19,7 +20,7 @@ func HandleLogout(sessionCookieName string) responder.AppHandler {
 			MaxAge:   -1,
 			SameSite: http.SameSiteStrictMode,
 		})
-		w.Header().Set("HX-REDIRECT", "/login")
+		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
 
 		return nil
 	}

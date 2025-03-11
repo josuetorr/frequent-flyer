@@ -59,7 +59,7 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong"))
 		}
 
-		w.Header().Set("HX-REDIRECT", "/login")
+		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
 		w.WriteHeader(http.StatusCreated)
 		return nil
 	}
