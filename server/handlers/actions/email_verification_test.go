@@ -14,8 +14,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-// TODO: Use a setup func
-// TODO: Add a common flow for endpoints (not sure what flow to use yet)
 func TestHandleEmailVerification_Successful(t *testing.T) {
 	// setup
 	testUser := &models.User{ID: "123"}
