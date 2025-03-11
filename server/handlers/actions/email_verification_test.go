@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/models"
@@ -22,10 +23,10 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	mockUserService := handlers.NewMockUserService(ctrl)
 	mockUserService.EXPECT().
-		GetById(gomock.Any(), testUser.ID).
+		GetById(gomock.Any(), gomock.Eq(testUser.ID)).
 		Return(testUser, nil)
 	mockUserService.EXPECT().
-		VerifyUser(gomock.Any(), testUser.ID).
+		VerifyUser(gomock.Any(), gomock.Eq(testUser.ID)).
 		Return(nil)
 
 	r := chi.NewRouter()
@@ -46,19 +47,78 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 
 func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	// setup
-	testUser := &models.User{ID: "123"}
 	ctrl := gomock.NewController(t)
 	mockUserService := handlers.NewMockUserService(ctrl)
-	mockUserService.EXPECT().
-		GetById(gomock.Any(), testUser.ID).
-		Return(testUser, nil)
-	mockUserService.EXPECT().
-		VerifyUser(gomock.Any(), testUser.ID).
-		Return(nil)
 
 	r := chi.NewRouter()
 	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
-	token := "this-is-an-invalid-token"
+	token := "thisisaninvalidtoken"
+	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	}
+}
+
+func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
+	// setup
+	ctrl := gomock.NewController(t)
+	mockUserService := handlers.NewMockUserService(ctrl)
+
+	r := chi.NewRouter()
+	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	token := utils.GenerateToken("123", "this is an invalid signature")
+	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	}
+}
+
+func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
+	// setup
+	ctrl := gomock.NewController(t)
+	mockUserService := handlers.NewMockUserService(ctrl)
+
+	r := chi.NewRouter()
+	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	expiresAt := time.Now().Add(time.Microsecond).Unix()
+	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
+	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	if res.StatusCode != http.StatusBadRequest {
+		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	}
+}
+
+// NOTE: we are here
+func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
+	// setup
+	ctrl := gomock.NewController(t)
+	mockUserService := handlers.NewMockUserService(ctrl)
+
+	r := chi.NewRouter()
+	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	expiresAt := time.Now().Add(time.Microsecond).Unix()
+	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
 
