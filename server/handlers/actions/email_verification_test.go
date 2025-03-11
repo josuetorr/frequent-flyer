@@ -14,7 +14,6 @@ import (
 	"go.uber.org/mock/gomock"
 )
 
-// TODO: Test failures
 // TODO: Use a setup func
 // TODO: Add a common flow for endpoints (not sure what flow to use yet)
 func TestHandleEmailVerification_Successful(t *testing.T) {
@@ -30,7 +29,7 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 		Return(nil)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	token := utils.GenerateToken("123", utils.GetTokenSecret())
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
@@ -51,7 +50,7 @@ func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	mockUserService := handlers.NewMockUserService(ctrl)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	token := "thisisaninvalidtoken"
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
@@ -72,7 +71,7 @@ func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 	mockUserService := handlers.NewMockUserService(ctrl)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	token := utils.GenerateToken("123", "this is an invalid signature")
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
 	rw := httptest.NewRecorder()
@@ -93,7 +92,7 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	mockUserService := handlers.NewMockUserService(ctrl)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	expiresAt := time.Now().Add(time.Microsecond).Unix()
 	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
@@ -116,7 +115,7 @@ func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	mockUserService := handlers.NewMockUserService(ctrl)
 
 	r := chi.NewRouter()
-	r.Get("/verify-email/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
+	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	expiresAt := time.Now().Add(time.Microsecond).Unix()
 	token := utils.GenerateTokenWithExpiration("123", expiresAt, "this is an invalid signature")
 	req := httptest.NewRequest(http.MethodGet, "/verify-email/"+token, nil)
