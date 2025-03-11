@@ -30,8 +30,12 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 		}
 
 		u, err := userService.GetById(r.Context(), userID)
-		if err != nil || u == nil {
+		if err != nil {
 			return responder.NewNotFound(err, components.AlertError("User not found"))
+		}
+		if u == nil {
+			err := errors.New("User not found")
+			return responder.NewNotFound(err, components.AlertError(err.Error()))
 		}
 		if err := userService.VerifyUser(r.Context(), userID); err != nil {
 			return responder.NewInternalServer(err, nil)

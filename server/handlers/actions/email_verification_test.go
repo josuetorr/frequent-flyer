@@ -3,6 +3,7 @@ package actions_test
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
@@ -45,10 +46,10 @@ func TestHandleEmailVerification_Successful(t *testing.T) {
 func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	// setup
 	userId := models.ID("123")
-	expiresIn := time.Millisecond
-	tokenSecret := "this is an invalid signature"
-	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
-	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
+	expiresIn := time.Minute
+	tokenSecret := utils.GetTokenSecret()
+	r, _ := setup(t, userId, expiresIn, tokenSecret, nil)
+	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/invalid-token", nil)
 	rw := httptest.NewRecorder()
 
 	// act
@@ -58,13 +59,17 @@ func TestHandleEmailVerification_WhenInvalidToken_Failure(t *testing.T) {
 	// assert
 	if res.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	}
+	body := rw.Body.String()
+	if !strings.Contains(string(body), "Invalid token") {
+		t.Errorf("Expected to receive 'Invalid token' error")
 	}
 }
 
 func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 	// setup
 	userId := models.ID("123")
-	expiresIn := time.Millisecond
+	expiresIn := time.Minute
 	tokenSecret := "this is an invalid signature"
 	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
@@ -78,13 +83,17 @@ func TestHandleEmailVerification_WhenInvalidSignature_Failure(t *testing.T) {
 	if res.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
 	}
+	body := rw.Body.String()
+	if !strings.Contains(string(body), "Invalid token") {
+		t.Errorf("Expected to receive 'Invalid token' error")
+	}
 }
 
 func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	// setup
 	userId := models.ID("123")
-	expiresIn := time.Millisecond
-	tokenSecret := "this is an invalid signature"
+	expiresIn := -time.Minute
+	tokenSecret := utils.GetTokenSecret()
 	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
@@ -96,6 +105,10 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 	// assert
 	if res.StatusCode != http.StatusBadRequest {
 		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	}
+	body := rw.Body.String()
+	if !strings.Contains(string(body), "Token expired") {
+		t.Errorf("Expected to receive 'Token expired' error")
 	}
 }
 
@@ -103,9 +116,13 @@ func TestHandleEmailVerification_WhenExpiredToken_Failure(t *testing.T) {
 func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	// setup
 	userId := models.ID("123")
-	expiresIn := time.Millisecond
-	tokenSecret := "this is an invalid signature"
-	r, token := setup(t, userId, expiresIn, tokenSecret, nil)
+	expiresIn := time.Minute
+	tokenSecret := utils.GetTokenSecret()
+	r, token := setup(t, userId, expiresIn, tokenSecret, func(mus *handlers.MockUserService) {
+		mus.EXPECT().
+			GetById(gomock.Any(), gomock.Eq(userId)).
+			Return(nil, nil)
+	})
 	req := httptest.NewRequest(http.MethodGet, handlers.VerifyEmailEndpoint+"/"+token, nil)
 	rw := httptest.NewRecorder()
 
@@ -114,18 +131,22 @@ func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	res := rw.Result()
 
 	// assert
-	if res.StatusCode != http.StatusBadRequest {
-		t.Errorf("Expected a BadRequest response. Received: %s", res.Status)
+	if res.StatusCode != http.StatusNotFound {
+		t.Errorf("Expected a NotFound response. Received: %s", res.Status)
+	}
+	body := rw.Body.String()
+	if !strings.Contains(string(body), "User not found") {
+		t.Errorf("Expected to receive 'User not found' error")
 	}
 }
 
-type MockConfigFunc func(handlers.UserService) *handlers.MockUserService
+type MockConfigFunc func(*handlers.MockUserService)
 
 func setup(t *testing.T, userId models.ID, expiration time.Duration, tokenSecret string, fn MockConfigFunc) (chi.Router, string) {
 	ctrl := gomock.NewController(t)
 	mockUserService := handlers.NewMockUserService(ctrl)
 	if fn != nil {
-		mockUserService = fn(mockUserService)
+		fn(mockUserService)
 	}
 
 	expiresAt := time.Now().Add(expiration).Unix()
