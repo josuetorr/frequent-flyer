@@ -139,9 +139,7 @@ func TestHandleEmailVerification_WhenUserNotFound_Failure(t *testing.T) {
 	}
 }
 
-type MockConfigFunc func(*handlers.MockUserService)
-
-func setup(t *testing.T, userId models.ID, expiration time.Duration, tokenSecret string, fn MockConfigFunc) (chi.Router, string) {
+func setup(t *testing.T, userId models.ID, expiration time.Duration, tokenSecret string, fn mockConfigFunc) (chi.Router, string) {
 	ctrl := gomock.NewController(t)
 	mockUserService := handlers.NewMockUserService(ctrl)
 	if fn != nil {
@@ -155,3 +153,5 @@ func setup(t *testing.T, userId models.ID, expiration time.Duration, tokenSecret
 	r.Get(handlers.VerifyEmailEndpoint+"/{token}", actions.HandleEmailVerification(mockUserService).ServeHTTP)
 	return r, token
 }
+
+type mockConfigFunc func(*handlers.MockUserService)
