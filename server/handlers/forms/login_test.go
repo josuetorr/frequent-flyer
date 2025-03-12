@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/models"
+	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
@@ -50,6 +51,67 @@ func TestLoginForm_Successful(t *testing.T) {
 	decoded, _ := utils.DecodeCookie("test_session_cookie", c.Value)
 	if decoded != "123:456" {
 		t.Errorf("Decoded cookie expected: 123:456. Received: %s", decoded)
+	}
+}
+
+func TestLoginForm_InvalidContentType_Failure(t *testing.T) {
+	// setup
+	r := setup(t, nil)
+	req := httptest.NewRequest(http.MethodPost, handlers.LoginEndpoint, nil)
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusUnsupportedMediaType
+	if res.StatusCode != expectedStatusCode {
+		t.Errorf("Expected a status of: %d. Received: %d", expectedStatusCode, res.StatusCode)
+	}
+}
+
+func TestLoginForm_InvalidEmail_Failure(t *testing.T) {
+	// setup
+	data := url.Values{}
+	data.Add("email", "malformed_email")
+	r := setup(t, nil)
+	req := httptest.NewRequest(http.MethodPost, handlers.LoginEndpoint, strings.NewReader(data.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusBadRequest
+	if res.StatusCode != expectedStatusCode {
+		t.Errorf("Expected a status of: %d. Received: %d", expectedStatusCode, res.StatusCode)
+	}
+}
+
+func TestLoginForm_InvalidCredentials_Failure(t *testing.T) {
+	// setup
+	data := url.Values{}
+	data.Add("email", "test@test.com")
+	r := setup(t, func(mas *handlers.MockAuthService) {
+		mas.EXPECT().
+			Login(gomock.Any(), gomock.Eq(data.Get("email")), gomock.Any()).
+			Return(nil, services.InvalidCredentialError)
+	})
+	req := httptest.NewRequest(http.MethodPost, handlers.LoginEndpoint, strings.NewReader(data.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rw := httptest.NewRecorder()
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusBadRequest
+	if res.StatusCode != expectedStatusCode {
+		t.Errorf("Expected a status of: %d. Received: %d", expectedStatusCode, res.StatusCode)
 	}
 }
 
