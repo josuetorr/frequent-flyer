@@ -16,6 +16,9 @@ import (
 
 func HandleLoginForm(sessionCookieName string, authService handlers.AuthService) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+			return responder.NewUnsupportedMediaType(errors.New("Unsupported media type"), nil)
+		}
 		if err := r.ParseForm(); err != nil {
 			slog.Error(err.Error())
 			return responder.NewBadRequest(err, nil)
