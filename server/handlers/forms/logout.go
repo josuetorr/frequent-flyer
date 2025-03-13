@@ -20,7 +20,7 @@ func HandleLogout(sessionCookieName string) responder.AppHandler {
 			MaxAge:   -1,
 			SameSite: http.SameSiteStrictMode,
 		}
-		http.SetCookie(w, cookie)
+		w.Header().Set("Set-Cookie", cookie.String())
 		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
 		w.WriteHeader(http.StatusOK)
 
