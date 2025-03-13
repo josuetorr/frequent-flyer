@@ -7,6 +7,7 @@ import (
 	cm "github.com/go-chi/chi/middleware"
 	"github.com/josuetorr/frequent-flyer/internal/data"
 	"github.com/josuetorr/frequent-flyer/internal/services"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/handlers/actions"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
@@ -31,6 +32,10 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 
 	authMw := middleware.NewAuthMiddleware(sessionCookieName, sessionService)
 
+	tokenSecret := utils.GetTokenSecret()
+	shk := utils.GetSessionHashKey()
+	sbk := utils.GetSessionBlockKey()
+
 	r.Group(func(r chi.Router) {
 		r.Use(authMw.RedirectIfLoggedIn)
 
@@ -38,7 +43,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 			http.Redirect(w, r, handlers.LoginEndpoint, http.StatusFound)
 		})
 		r.Method("GET", handlers.LoginEndpoint, responder.AppHandler(pages.HandleLogin))
-		r.Method("POST", handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, authService))
+		r.Method("POST", handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, authService, shk, sbk))
 
 		r.Method("GET", handlers.SignupEndpoint, responder.AppHandler(pages.HandleSignup))
 		r.Method("POST", handlers.SignupEndpoint, forms.HandleSignupForm(authService, mailService))
@@ -55,7 +60,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 	r.Method("GET", handlers.PasswordResetEmailSubmissionEndpoint, responder.AppHandler(pages.HandlePasswordResetEmailSubmission))
 	r.Method("POST", handlers.PasswordResetEmailSubmissionEndpoint, forms.HandlePasswordResetEmailSubmission(userService, mailService))
 	r.Method("GET", handlers.PasswordResetEndpoint+"/{token}", pages.HandlePasswordResetSubmission(userService))
-	r.Method("POST", handlers.PasswordResetEndpoint+"/{token}", forms.HandlePasswordResetSubmission(userService))
+	r.Method("POST", handlers.PasswordResetEndpoint+"/{token}", forms.HandlePasswordResetSubmission(userService, tokenSecret))
 
 	return r
 }

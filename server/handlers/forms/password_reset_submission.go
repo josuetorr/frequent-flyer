@@ -11,10 +11,10 @@ import (
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
-func HandlePasswordResetSubmission(userService handlers.UserService) responder.AppHandler {
+func HandlePasswordResetSubmission(userService handlers.UserService, secret string) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
-		userId, err := utils.VerifyToken(token, utils.GetTokenSecret())
+		userId, err := utils.VerifyToken(token, secret)
 		if err != nil {
 			return responder.NewNotFound(err, nil)
 		}

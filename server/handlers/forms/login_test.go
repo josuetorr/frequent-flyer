@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"os"
 	"slices"
 	"strings"
 	"testing"
@@ -16,6 +15,11 @@ import (
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"go.uber.org/mock/gomock"
+)
+
+var (
+	shk = utils.GetSessionHashKey()
+	sbk = utils.GetSessionBlockKey()
 )
 
 func TestLoginForm_Successful(t *testing.T) {
@@ -48,7 +52,7 @@ func TestLoginForm_Successful(t *testing.T) {
 		return c.Name == "test_session_cookie"
 	})
 	c := cookies[i]
-	decoded, _ := utils.DecodeCookie("test_session_cookie", c.Value)
+	decoded, _ := utils.DecodeCookie("test_session_cookie", c.Value, shk, sbk)
 	if decoded != "123:456" {
 		t.Errorf("Decoded cookie expected: 123:456. Received: %s", decoded)
 	}
@@ -116,8 +120,6 @@ func TestLoginForm_InvalidCredentials_Failure(t *testing.T) {
 }
 
 func setupLogin(t *testing.T, fn mockConfigFunc) chi.Router {
-	os.Setenv("SESSION_HASH_KEY", "772soie213s2k2lw3op42e14f20c44de8b23b75c091f72294f8289d8d2d2ef79")
-	os.Setenv("SESSION_BLOCK_KEY", "82mw8201aspw2l8x8p09801a2c8a6892")
 	sessionCookieName := "test_session_cookie"
 	ctrl := gomock.NewController(t)
 	mockAuthHandlers := handlers.NewMockAuthService(ctrl)
@@ -125,7 +127,7 @@ func setupLogin(t *testing.T, fn mockConfigFunc) chi.Router {
 		fn(mockAuthHandlers)
 	}
 	r := chi.NewRouter()
-	r.Post(handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, mockAuthHandlers).ServeHTTP)
+	r.Post(handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, mockAuthHandlers, shk, sbk).ServeHTTP)
 	return r
 }
 
