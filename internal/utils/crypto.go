@@ -10,7 +10,7 @@ func EncodeCookie(cookieName string, cookieValue string, sessionHashKey string, 
 }
 
 func DecodeCookie(cookieName string, cookieValue string, sessionHashKey string, sessionBlockKey string) (string, error) {
-	encoder := securecookie.New([]byte(GetSessionHashKey()), []byte(GetSessionBlockKey()))
+	encoder := securecookie.New([]byte(sessionHashKey), []byte(sessionBlockKey))
 	var value string
 	err := encoder.Decode(cookieName, cookieValue, &value)
 	return value, err
