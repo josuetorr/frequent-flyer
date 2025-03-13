@@ -11,7 +11,7 @@ import (
 // session. If they decide to kill their session, then we delete it.
 func HandleLogout(sessionCookieName string) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
-		http.SetCookie(w, &http.Cookie{
+		cookie := &http.Cookie{
 			Name:  sessionCookieName,
 			Value: "",
 			// HttpOnly: true,
@@ -19,7 +19,8 @@ func HandleLogout(sessionCookieName string) responder.AppHandler {
 			Path:     "/",
 			MaxAge:   -1,
 			SameSite: http.SameSiteStrictMode,
-		})
+		}
+		http.SetCookie(w, cookie)
 		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
 		w.WriteHeader(http.StatusOK)
 
