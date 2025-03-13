@@ -22,7 +22,7 @@ func TestLoginForm_Successful(t *testing.T) {
 	// setup
 	email := "test@test.com"
 	password := "secretpassword"
-	r := setup(t, func(mas *handlers.MockAuthService) {
+	r := setupLogin(t, func(mas *handlers.MockAuthService) {
 		s := &models.Session{ID: "123", UserID: "456"}
 		mas.EXPECT().
 			Login(gomock.Any(), gomock.Eq(email), gomock.Eq(password)).
@@ -56,7 +56,7 @@ func TestLoginForm_Successful(t *testing.T) {
 
 func TestLoginForm_InvalidContentType_Failure(t *testing.T) {
 	// setup
-	r := setup(t, nil)
+	r := setupLogin(t, nil)
 	req := httptest.NewRequest(http.MethodPost, handlers.LoginEndpoint, nil)
 	rw := httptest.NewRecorder()
 
@@ -75,7 +75,7 @@ func TestLoginForm_InvalidEmail_Failure(t *testing.T) {
 	// setup
 	data := url.Values{}
 	data.Add("email", "malformed_email")
-	r := setup(t, nil)
+	r := setupLogin(t, nil)
 	req := httptest.NewRequest(http.MethodPost, handlers.LoginEndpoint, strings.NewReader(data.Encode()))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rw := httptest.NewRecorder()
@@ -95,7 +95,7 @@ func TestLoginForm_InvalidCredentials_Failure(t *testing.T) {
 	// setup
 	data := url.Values{}
 	data.Add("email", "test@test.com")
-	r := setup(t, func(mas *handlers.MockAuthService) {
+	r := setupLogin(t, func(mas *handlers.MockAuthService) {
 		mas.EXPECT().
 			Login(gomock.Any(), gomock.Eq(data.Get("email")), gomock.Any()).
 			Return(nil, services.InvalidCredentialError)
@@ -115,7 +115,7 @@ func TestLoginForm_InvalidCredentials_Failure(t *testing.T) {
 	}
 }
 
-func setup(t *testing.T, fn mockConfigFunc) chi.Router {
+func setupLogin(t *testing.T, fn mockConfigFunc) chi.Router {
 	os.Setenv("SESSION_HASH_KEY", "772soie213s2k2lw3op42e14f20c44de8b23b75c091f72294f8289d8d2d2ef79")
 	os.Setenv("SESSION_BLOCK_KEY", "82mw8201aspw2l8x8p09801a2c8a6892")
 	sessionCookieName := "test_session_cookie"
