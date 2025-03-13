@@ -20,22 +20,20 @@ func TestPasswordResetEmailSubmission_Successful(t *testing.T) {
 		ID:    "123",
 		Email: "test@test.com",
 	}
-	r, req, rw := setupPasswordResetEmailSubmission(
-		t,
-		func(mus *handlers.MockUserService) {
-			mus.EXPECT().
-				GetByEmail(gomock.Any(), gomock.Eq(u.Email)).
-				Return(u, nil)
-		},
-		func(mms *handlers.MockMailService) {
-			mms.EXPECT().
-				GenerateEmailLink(gomock.Eq(u.ID), gomock.Any(), gomock.Any()).
-				Return("some-link")
-			mms.EXPECT().
-				SendPasswordResetEmail(gomock.Any(), gomock.Any(), gomock.Any()).
-				Return(nil)
-		},
-	)
+	setupMus := func(mus *handlers.MockUserService) {
+		mus.EXPECT().
+			GetByEmail(gomock.Any(), gomock.Eq(u.Email)).
+			Return(u, nil)
+	}
+	setupMms := func(mms *handlers.MockMailService) {
+		mms.EXPECT().
+			GenerateEmailLink(gomock.Eq(u.ID), gomock.Any(), gomock.Any()).
+			Return("some-link")
+		mms.EXPECT().
+			SendPasswordResetEmail(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(nil)
+	}
+	r, req, rw := setupPasswordResetEmailSubmission(t, setupMus, setupMms)
 
 	// act
 	r.ServeHTTP(rw, req)
