@@ -33,7 +33,7 @@ func TestPasswordResetEmailSubmission_Successful(t *testing.T) {
 			SendPasswordResetEmail(gomock.Any(), gomock.Any(), gomock.Any()).
 			Return(nil)
 	}
-	r, req, rw := setupPasswordResetEmailSubmission(t, setupMus, setupMms)
+	r, req, rw := setupPasswordResetEmailSubmission(t, u.Email, setupMus, setupMms)
 
 	// act
 	r.ServeHTTP(rw, req)
@@ -48,15 +48,29 @@ func TestPasswordResetEmailSubmission_Successful(t *testing.T) {
 }
 
 func TestPasswordResetEmailSubmission_InvalidEmail_Failure(t *testing.T) {
+	// setup
+	r, req, rw := setupPasswordResetEmailSubmission(t, "invalid_email", nil, nil)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusBadRequest
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code :%d. Received status code: %d", expectedStatusCode, receivedStatusCode)
+	}
 }
 
 func setupPasswordResetEmailSubmission(
 	t *testing.T,
+	email string,
 	fnU func(*handlers.MockUserService),
 	fnM func(*handlers.MockMailService),
 ) (chi.Router, *http.Request, *httptest.ResponseRecorder) {
 	data := url.Values{}
-	data.Add("email", "test@test.com")
+	data.Add("email", email)
 	pwRsetEndpt := handlers.PasswordResetEmailSubmissionEndpoint
 	req := httptest.NewRequest(
 		http.MethodPost,
@@ -68,9 +82,13 @@ func setupPasswordResetEmailSubmission(
 
 	ctrl := gomock.NewController(t)
 	mus := handlers.NewMockUserService(ctrl)
-	fnU(mus)
+	if fnU != nil {
+		fnU(mus)
+	}
 	mms := handlers.NewMockMailService(ctrl)
-	fnM(mms)
+	if fnM != nil {
+		fnM(mms)
+	}
 
 	r := chi.NewRouter()
 	r.Post(pwRsetEndpt, forms.HandlePasswordResetEmailSubmission(mus, mms).ServeHTTP)
