@@ -84,6 +84,36 @@ func TestPasswordResetEmailSubmission_UserNotFound_Failure(t *testing.T) {
 	}
 }
 
+func TestPasswordResetEmailSubmission_FailToSendEmail_Failure(t *testing.T) {
+	// setup
+	u := &models.User{ID: "123", Email: "test@test.com"}
+	setupMus := func(mus *handlers.MockUserService) {
+		mus.EXPECT().
+			GetByEmail(gomock.Any(), gomock.Any()).
+			Return(u, nil)
+	}
+	setupMms := func(mms *handlers.MockMailService) {
+		mms.EXPECT().
+			GenerateEmailLink(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return("some-link")
+		mms.EXPECT().
+			SendPasswordResetEmail(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return(errors.New("Some internal error"))
+	}
+	r, req, rw := setupPasswordResetEmailSubmission(t, u.Email, setupMus, setupMms)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusInternalServerError
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code :%d. Received status code: %d", expectedStatusCode, receivedStatusCode)
+	}
+}
+
 func setupPasswordResetEmailSubmission(
 	t *testing.T,
 	email string,
