@@ -14,7 +14,12 @@ import (
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
-func HandleLoginForm(sessionCookieName string, authService handlers.AuthService, sessionHashKey string, sessionBlockKey string) responder.AppHandler {
+func HandleLoginForm(
+	sessionCookieName string,
+	authService handlers.AuthService,
+	sessionHashKey string,
+	sessionBlockKey string,
+) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
 			return responder.NewUnsupportedMediaType(errors.New("Unsupported media type"), nil)
