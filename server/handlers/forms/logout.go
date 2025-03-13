@@ -21,6 +21,7 @@ func HandleLogout(sessionCookieName string) responder.AppHandler {
 			SameSite: http.SameSiteStrictMode,
 		})
 		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
+		w.WriteHeader(http.StatusOK)
 
 		return nil
 	}
