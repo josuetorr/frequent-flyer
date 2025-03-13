@@ -1,6 +1,7 @@
 package forms_test
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -18,16 +19,16 @@ import (
 )
 
 var (
-	shk = utils.GetSessionHashKey()
-	sbk = utils.GetSessionBlockKey()
+	shk = "12ac3if08dea4829ea292917ead4221b898abc2c091f72294f8289d8d2d2ef79"
+	sbk = "08aeea1e83291ea298bbb01a2c8a6892"
 )
 
 func TestLoginForm_Successful(t *testing.T) {
 	// setup
 	email := "test@test.com"
 	password := "secretpassword"
+	s := &models.Session{ID: "123", UserID: "456"}
 	r := setupLogin(t, func(mas *handlers.MockAuthService) {
-		s := &models.Session{ID: "123", UserID: "456"}
 		mas.EXPECT().
 			Login(gomock.Any(), gomock.Eq(email), gomock.Eq(password)).
 			Return(s, nil)
@@ -44,17 +45,21 @@ func TestLoginForm_Successful(t *testing.T) {
 	res := rw.Result()
 
 	// assert
-	if res.StatusCode != http.StatusOK {
-		t.Errorf("Expected a status of: %d. Received: %d", http.StatusOK, res.StatusCode)
+	expectedStatusCode := http.StatusOK
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected a status of: %d. Received: %d", expectedStatusCode, receivedStatusCode)
 	}
 	cookies := res.Cookies()
+	cookieName := "test_session_cookie"
 	i := slices.IndexFunc(cookies, func(c *http.Cookie) bool {
-		return c.Name == "test_session_cookie"
+		return c.Name == cookieName
 	})
 	c := cookies[i]
-	decoded, _ := utils.DecodeCookie("test_session_cookie", c.Value, shk, sbk)
-	if decoded != "123:456" {
-		t.Errorf("Decoded cookie expected: 123:456. Received: %s", decoded)
+	decoded, _ := utils.DecodeCookie(cookieName, c.Value, shk, sbk)
+	expected := fmt.Sprintf("%s:%s", s.ID, s.UserID)
+	if decoded != expected {
+		t.Errorf("Decoded cookie expected: %s. Received: %s", expected, decoded)
 	}
 }
 
