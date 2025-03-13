@@ -1,6 +1,7 @@
 package forms_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -63,11 +64,31 @@ func TestPasswordResetEmailSubmission_InvalidEmail_Failure(t *testing.T) {
 	}
 }
 
+func TestPasswordResetEmailSubmission_UserNotFound_Failure(t *testing.T) {
+	// setup
+	setupMus := func(mms *handlers.MockUserService) {
+		mms.EXPECT().
+			GetByEmail(gomock.Any(), gomock.Any()).
+			Return(nil, errors.New("User not found"))
+	}
+	r, req, rw := setupPasswordResetEmailSubmission(t, "test@test.com", setupMus, nil)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	expectedStatusCode := http.StatusNotFound
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code :%d. Received status code: %d", expectedStatusCode, receivedStatusCode)
+	}
+}
+
 func setupPasswordResetEmailSubmission(
 	t *testing.T,
 	email string,
-	fnU func(*handlers.MockUserService),
-	fnM func(*handlers.MockMailService),
+	setupMus func(*handlers.MockUserService),
+	SetupMms func(*handlers.MockMailService),
 ) (chi.Router, *http.Request, *httptest.ResponseRecorder) {
 	data := url.Values{}
 	data.Add("email", email)
@@ -82,12 +103,12 @@ func setupPasswordResetEmailSubmission(
 
 	ctrl := gomock.NewController(t)
 	mus := handlers.NewMockUserService(ctrl)
-	if fnU != nil {
-		fnU(mus)
+	if setupMus != nil {
+		setupMus(mus)
 	}
 	mms := handlers.NewMockMailService(ctrl)
-	if fnM != nil {
-		fnM(mms)
+	if SetupMms != nil {
+		SetupMms(mms)
 	}
 
 	r := chi.NewRouter()
