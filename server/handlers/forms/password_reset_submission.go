@@ -19,6 +19,10 @@ func HandlePasswordResetSubmission(userService handlers.UserService, secret stri
 			return responder.NewNotFound(err, nil)
 		}
 
+		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+			err := errors.New("Unsupported Media type")
+			return responder.NewUnsupportedMediaType(err, nil)
+		}
 		if err := r.ParseForm(); err != nil {
 			return responder.NewBadRequest(err, components.AlertError("Invalid form"))
 		}

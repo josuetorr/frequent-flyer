@@ -52,13 +52,14 @@ func setupPasswordReset(
 	}
 
 	secret := "secret"
-	token := utils.GenerateToken("token", secret)
-	endpoint := handlers.PasswordResetEndpoint + "/" + token
-	req := httptest.NewRequest(http.MethodPost, endpoint, strings.NewReader(data.Encode()))
+	token := utils.GenerateToken("123", secret)
+	endpoint := handlers.PasswordResetEndpoint
+	req := httptest.NewRequest(http.MethodPost, endpoint+"/"+token, strings.NewReader(data.Encode()))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rw := httptest.NewRecorder()
 
 	r := chi.NewRouter()
-	r.Post(endpoint, forms.HandlePasswordResetSubmission(mus, secret).ServeHTTP)
+	r.Post(endpoint+"/{token}", forms.HandlePasswordResetSubmission(mus, secret).ServeHTTP)
 
 	return r, req, rw
 }
