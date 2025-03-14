@@ -7,13 +7,16 @@ import (
 	"net/mail"
 
 	"github.com/josuetorr/frequent-flyer/internal/services"
-	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
-func HandleSignupForm(authService handlers.AuthService, mailService handlers.MailService) responder.AppHandler {
+func HandleSignupForm(
+	authService handlers.AuthService,
+	mailService handlers.MailService,
+	secret string,
+) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
 			err := errors.New("Unsupported Media type")
@@ -56,7 +59,6 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 			}
 		}
 
-		secret := utils.GetTokenSecret()
 		link := mailService.GenerateEmailLink(userID, handlers.VerifyEmailEndpoint, secret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
