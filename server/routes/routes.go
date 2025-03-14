@@ -46,7 +46,7 @@ func RegisterRoutes(db *data.DBPool) chi.Router {
 		r.Method("POST", handlers.LoginEndpoint, forms.HandleLoginForm(sessionCookieName, authService, shk, sbk))
 
 		r.Method("GET", handlers.SignupEndpoint, responder.AppHandler(pages.HandleSignup))
-		r.Method("POST", handlers.SignupEndpoint, forms.HandleSignupForm(authService, mailService))
+		r.Method("POST", handlers.SignupEndpoint, forms.HandleSignupForm(authService, mailService, tokenSecret))
 	})
 
 	r.Group(func(r chi.Router) {
