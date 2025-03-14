@@ -72,6 +72,7 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 	return userId, nil
 }
 
+// NOTE: "endpoint" needs to provide '/' as it's first character
 func GenerateEmailLink(endpoint string, token string) string {
 	return fmt.Sprintf("%s%s/%s", GetAppHostURL(), endpoint, token)
 }
