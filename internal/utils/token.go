@@ -73,5 +73,5 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 }
 
 func GenerateEmailLink(endpoint string, token string) string {
-	return fmt.Sprintf("%s/%s/%s", GetAppHostURL(), endpoint, token)
+	return fmt.Sprintf("%s%s/%s", GetAppHostURL(), endpoint, token)
 }
