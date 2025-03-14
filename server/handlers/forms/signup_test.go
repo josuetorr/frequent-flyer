@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/go-chi/chi"
+	"github.com/josuetorr/frequent-flyer/internal/services"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/handlers/forms"
 	"go.uber.org/mock/gomock"
@@ -130,6 +131,34 @@ func TestSignup_TooShortPassword_Failure(t *testing.T) {
 	receivedHxFocus := res.Header.Get("HX-FOCUS")
 	if expectedHxFocus != receivedHxFocus {
 		t.Errorf("Expected HX-FOCUS: %s. Received HX-FOCUS: %s", expectedHxFocus, receivedHxFocus)
+	}
+}
+
+func TestSignup_UserAlreadyExists_Failure(t *testing.T) {
+	// setup
+	data := &url.Values{}
+	data.Add("email", "test@test.com")
+	data.Add("password", "password")
+	data.Add("password-confirm", "password")
+	tokenSecret := "test_secret"
+
+	setupMas := func(mas *handlers.MockAuthService) {
+		mas.EXPECT().
+			Signup(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return("", services.UserAlreadyExistsError)
+	}
+
+	r, req, rw := setupSignup(t, data, tokenSecret, setupMas, nil)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusBadRequest
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code: %d. Received status code: %d", expectedStatusCode, receivedStatusCode)
 	}
 }
 
