@@ -1,6 +1,7 @@
 package forms_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -156,6 +157,34 @@ func TestSignup_UserAlreadyExists_Failure(t *testing.T) {
 
 	// assert
 	expectedStatusCode := http.StatusBadRequest
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code: %d. Received status code: %d", expectedStatusCode, receivedStatusCode)
+	}
+}
+
+func TestSignup_InternalServer_Failure(t *testing.T) {
+	// setup
+	data := &url.Values{}
+	data.Add("email", "test@test.com")
+	data.Add("password", "password")
+	data.Add("password-confirm", "password")
+	tokenSecret := "test_secret"
+
+	setupMas := func(mas *handlers.MockAuthService) {
+		mas.EXPECT().
+			Signup(gomock.Any(), gomock.Any(), gomock.Any()).
+			Return("", errors.New("test Internal server error"))
+	}
+
+	r, req, rw := setupSignup(t, data, tokenSecret, setupMas, nil)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusInternalServerError
 	receivedStatusCode := res.StatusCode
 	if expectedStatusCode != receivedStatusCode {
 		t.Errorf("Expected status code: %d. Received status code: %d", expectedStatusCode, receivedStatusCode)
