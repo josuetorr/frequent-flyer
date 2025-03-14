@@ -79,6 +79,33 @@ func TestSignup_InvalidEmail_Failure(t *testing.T) {
 	}
 }
 
+func TestSignup_PasswordsDoNotMatch_Failure(t *testing.T) {
+	// setup
+	data := &url.Values{}
+	data.Add("email", "test@test.com")
+	data.Add("password", "password")
+	data.Add("password-confirm", "password1")
+	tokenSecret := "test_secret"
+
+	r, req, rw := setupSignup(t, data, tokenSecret, nil, nil)
+
+	// act
+	r.ServeHTTP(rw, req)
+	res := rw.Result()
+
+	// assert
+	expectedStatusCode := http.StatusBadRequest
+	receivedStatusCode := res.StatusCode
+	if expectedStatusCode != receivedStatusCode {
+		t.Errorf("Expected status code: %d. Received status code: %d", expectedStatusCode, receivedStatusCode)
+	}
+	expectedHxFocus := "#password-confirm"
+	receivedHxFocus := res.Header.Get("HX-FOCUS")
+	if expectedHxFocus != receivedHxFocus {
+		t.Errorf("Expected HX-FOCUS: %s. Received HX-FOCUS: %s", expectedHxFocus, receivedHxFocus)
+	}
+}
+
 func setupSignup(
 	t *testing.T,
 	data *url.Values,
