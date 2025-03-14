@@ -17,7 +17,7 @@ func NewUserService(repo UserRepository) *UserService {
 	}
 }
 
-func (s *UserService) Insert(ctx context.Context, user *models.User) error {
+func (s *UserService) Insert(ctx context.Context, user *models.User) (*models.User, error) {
 	return s.repo.Insert(ctx, user)
 }
 

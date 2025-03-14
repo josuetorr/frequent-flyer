@@ -44,12 +44,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		Password: string(hash),
 	}
 
-	// TODO: Insert should return the user
-	if err := s.userRepo.Insert(ctx, user); err != nil {
-		return "", err
-	}
-
-	user, err = s.userRepo.GetByEmail(ctx, user.Email)
+	user, err = s.userRepo.Insert(ctx, user)
 	if err != nil {
 		return "", err
 	}
