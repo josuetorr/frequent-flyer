@@ -2,12 +2,10 @@ package actions
 
 import (
 	"errors"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	"github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
@@ -18,14 +16,13 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
 
-		userID, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
+		userID, err := utils.VerifyToken(token, utils.GetTokenSecret())
 		if err != nil {
-			slog.Error(err.Error())
 			switch {
-			case errors.Is(err, emailtoken.InvalidTokenErr),
-				errors.Is(err, emailtoken.InvalidSignatureErr):
+			case errors.Is(err, utils.InvalidTokenErr),
+				errors.Is(err, utils.InvalidSignatureErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Invalid token"))
-			case errors.Is(err, emailtoken.ExpiredTokenErr):
+			case errors.Is(err, utils.ExpiredTokenErr):
 				return responder.NewBadRequest(err, emailTemplates.Error("Token expired"))
 			default:
 				return responder.NewInternalServer(err, emailTemplates.Error("Internal server error"))
@@ -33,15 +30,18 @@ func HandleEmailVerification(userService handlers.UserService) responder.AppHand
 		}
 
 		u, err := userService.GetById(r.Context(), userID)
-		if err != nil || u == nil {
+		if err != nil {
 			return responder.NewNotFound(err, components.AlertError("User not found"))
+		}
+		if u == nil {
+			err := errors.New("User not found")
+			return responder.NewNotFound(err, components.AlertError(err.Error()))
 		}
 		if err := userService.VerifyUser(r.Context(), userID); err != nil {
 			return responder.NewInternalServer(err, nil)
 		}
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		w.WriteHeader(http.StatusNoContent)
+		http.Redirect(w, r, handlers.LoginEndpoint, http.StatusSeeOther)
 		return nil
 	}
 }

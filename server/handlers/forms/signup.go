@@ -7,14 +7,21 @@ import (
 	"net/mail"
 
 	"github.com/josuetorr/frequent-flyer/internal/services"
-	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
-func HandleSignupForm(authService handlers.AuthService, mailService handlers.MailService) responder.AppHandler {
+func HandleSignupForm(
+	authService handlers.AuthService,
+	mailService handlers.MailService,
+	tokenSecret string,
+) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+			err := errors.New("Unsupported Media type")
+			return responder.NewUnsupportedMediaType(err, nil)
+		}
 		if err := r.ParseForm(); err != nil {
 			return responder.NewBadRequest(err, nil)
 		}
@@ -52,14 +59,13 @@ func HandleSignupForm(authService handlers.AuthService, mailService handlers.Mai
 			}
 		}
 
-		secret := utils.GetEmailSecret()
-		link := mailService.GenerateEmailLink(userID, "verify-email", secret)
+		link := mailService.GenerateEmailLink(userID, handlers.VerifyEmailEndpoint, tokenSecret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong"))
 		}
 
-		w.Header().Set("HX-REDIRECT", "/login")
+		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
 		w.WriteHeader(http.StatusCreated)
 		return nil
 	}

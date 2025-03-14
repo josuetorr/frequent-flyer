@@ -27,3 +27,13 @@ type MailService interface {
 type SessionService interface {
 	GetWithUser(ctx context.Context, sessionID models.ID, userID models.ID) (*models.Session, *models.User, error)
 }
+
+const (
+	LoginEndpoint                        = "/login"
+	SignupEndpoint                       = "/signup"
+	HomeEndpoint                         = "/home"
+	LogoutEndpoint                       = "/logout"
+	VerifyEmailEndpoint                  = "/verify-email"
+	PasswordResetEndpoint                = "/password-reset"
+	PasswordResetEmailSubmissionEndpoint = "/password-reset-email"
+)

@@ -6,20 +6,23 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 	"github.com/josuetorr/frequent-flyer/web/templates/components"
 )
 
-func HandlePasswordResetSubmission(userService handlers.UserService) responder.AppHandler {
+func HandlePasswordResetSubmission(userService handlers.UserService, secret string) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		token := chi.URLParam(r, "token")
-		userId, err := emailtoken.VerifyToken(token, utils.GetEmailSecret())
+		userId, err := utils.VerifyToken(token, secret)
 		if err != nil {
 			return responder.NewNotFound(err, nil)
 		}
 
+		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+			err := errors.New("Unsupported Media type")
+			return responder.NewUnsupportedMediaType(err, nil)
+		}
 		if err := r.ParseForm(); err != nil {
 			return responder.NewBadRequest(err, components.AlertError("Invalid form"))
 		}

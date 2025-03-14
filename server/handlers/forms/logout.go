@@ -3,6 +3,7 @@ package forms
 import (
 	"net/http"
 
+	"github.com/josuetorr/frequent-flyer/server/handlers"
 	"github.com/josuetorr/frequent-flyer/server/internal/utils/responder"
 )
 
@@ -10,7 +11,7 @@ import (
 // session. If they decide to kill their session, then we delete it.
 func HandleLogout(sessionCookieName string) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
-		http.SetCookie(w, &http.Cookie{
+		cookie := &http.Cookie{
 			Name:  sessionCookieName,
 			Value: "",
 			// HttpOnly: true,
@@ -18,8 +19,10 @@ func HandleLogout(sessionCookieName string) responder.AppHandler {
 			Path:     "/",
 			MaxAge:   -1,
 			SameSite: http.SameSiteStrictMode,
-		})
-		w.Header().Set("HX-REDIRECT", "/login")
+		}
+		w.Header().Set("Set-Cookie", cookie.String())
+		w.Header().Set("HX-REDIRECT", handlers.LoginEndpoint)
+		w.WriteHeader(http.StatusOK)
 
 		return nil
 	}

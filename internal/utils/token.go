@@ -1,4 +1,4 @@
-package emailtoken
+package utils
 
 import (
 	"crypto/hmac"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
-	"github.com/josuetorr/frequent-flyer/internal/utils"
 )
 
 const (
@@ -24,19 +23,23 @@ var (
 	ExpiredTokenErr     = errors.New("Expired token")
 )
 
-func GenerateEmailToken(userID models.ID, secret string) string {
-	expiresAt := time.Now().Add(time.Minute * 15).Unix()
+func GenerateTokenWithExpiration(userID models.ID, expiresAt int64, secret string) string {
 	payload := fmt.Appendf([]byte{}, "%s%s%d", userID, payloadSep, expiresAt)
 
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write(payload)
 	signature := mac.Sum(nil)
 
-	return base64.URLEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
+	return base64.RawURLEncoding.EncodeToString(fmt.Appendf(payload, "%s%s", tokenSep, signature))
+}
+
+func GenerateToken(userID models.ID, secret string) string {
+	expiresAt := time.Now().Add(time.Minute * 15).Unix()
+	return GenerateTokenWithExpiration(userID, expiresAt, secret)
 }
 
 func VerifyToken(token string, secret string) (models.ID, error) {
-	tokenBytes, err := base64.URLEncoding.DecodeString(token)
+	tokenBytes, err := base64.RawURLEncoding.DecodeString(token)
 	if err != nil {
 		return "", InvalidTokenErr
 	}
@@ -69,6 +72,7 @@ func VerifyToken(token string, secret string) (models.ID, error) {
 	return userId, nil
 }
 
+// NOTE: "endpoint" needs to provide '/' as it's first character
 func GenerateEmailLink(endpoint string, token string) string {
-	return fmt.Sprintf("%s/%s/%s", utils.GetAppHostURL(), endpoint, token)
+	return fmt.Sprintf("%s%s/%s", GetAppHostURL(), endpoint, token)
 }

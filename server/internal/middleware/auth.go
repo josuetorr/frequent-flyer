@@ -38,7 +38,9 @@ func (m *AuthMiddleware) Authorized(next http.Handler) http.Handler {
 			return
 		}
 
-		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		shk := utils.GetSessionHashKey()
+		sbk := utils.GetSessionBlockKey()
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value, shk, sbk)
 		if err != nil {
 			slog.Error(err.Error())
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)
@@ -88,7 +90,9 @@ func (m *AuthMiddleware) RedirectIfLoggedIn(next http.Handler) http.Handler {
 			return
 		}
 
-		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value)
+		shk := utils.GetSessionHashKey()
+		sbk := utils.GetSessionBlockKey()
+		cookieValue, err := utils.DecodeCookie(m.sessionCookieName, sessionCookie.Value, shk, sbk)
 		if err != nil {
 			slog.Error(err.Error())
 			http.Redirect(w, r, "/login", http.StatusUnauthorized)

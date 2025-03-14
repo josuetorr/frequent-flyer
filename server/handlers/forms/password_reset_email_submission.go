@@ -1,6 +1,7 @@
 package forms
 
 import (
+	"errors"
 	"net/http"
 	"net/mail"
 
@@ -12,6 +13,10 @@ import (
 
 func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailService handlers.MailService) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
+		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
+			err := errors.New("Unsupported Media type")
+			return responder.NewUnsupportedMediaType(err, nil)
+		}
 		if err := r.ParseForm(); err != nil {
 			return responder.NewBadRequest(err, nil)
 		}
@@ -25,10 +30,10 @@ func HandlePasswordResetEmailSubmission(userService handlers.UserService, mailSe
 		ctx := r.Context()
 		u, err := userService.GetByEmail(ctx, email)
 		if err != nil || u == nil {
-			return responder.NewBadRequest(err, components.AlertError("User not found"))
+			return responder.NewNotFound(err, components.AlertError("User not found"))
 		}
 
-		link := mailService.GenerateEmailLink(u.ID, "password-reset", utils.GetEmailSecret())
+		link := mailService.GenerateEmailLink(u.ID, "password-reset", utils.GetTokenSecret())
 		if err := mailService.SendPasswordResetEmail(ctx, link, email); err != nil {
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong whilst sending email"))
 		}

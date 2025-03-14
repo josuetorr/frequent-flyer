@@ -6,7 +6,6 @@ import (
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/utils"
-	emailtoken "github.com/josuetorr/frequent-flyer/internal/utils/email_token"
 	emailTemplates "github.com/josuetorr/frequent-flyer/web/templates/email"
 	"gopkg.in/gomail.v2"
 )
@@ -18,8 +17,8 @@ func NewMailService() *MailService {
 }
 
 func (s *MailService) GenerateEmailLink(userID models.ID, endpoint string, secret string) string {
-	token := emailtoken.GenerateEmailToken(userID, utils.GetEmailSecret())
-	return emailtoken.GenerateEmailLink(endpoint, token)
+	token := utils.GenerateToken(userID, utils.GetTokenSecret())
+	return utils.GenerateEmailLink(endpoint, token)
 }
 
 func (s *MailService) SendVerificationEmail(ctx context.Context, link string, to string) error {
