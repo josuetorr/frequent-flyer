@@ -15,7 +15,7 @@ import (
 func HandleSignupForm(
 	authService handlers.AuthService,
 	mailService handlers.MailService,
-	secret string,
+	tokenSecret string,
 ) responder.AppHandler {
 	return func(w http.ResponseWriter, r *http.Request) *responder.AppError {
 		if r.Header.Get("Content-Type") != "application/x-www-form-urlencoded" {
@@ -59,7 +59,7 @@ func HandleSignupForm(
 			}
 		}
 
-		link := mailService.GenerateEmailLink(userID, handlers.VerifyEmailEndpoint, secret)
+		link := mailService.GenerateEmailLink(userID, handlers.VerifyEmailEndpoint, tokenSecret)
 
 		if err := mailService.SendVerificationEmail(ctx, link, email); err != nil {
 			return responder.NewInternalServer(err, components.AlertError("Oops... something went wrong"))
