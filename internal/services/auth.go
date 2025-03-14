@@ -27,6 +27,7 @@ func NewAuthService(userRepo UserRepository, sessionRepo SessionRepository) *Aut
 	}
 }
 
+// NOTE: we are assuming email is valid
 func (s *AuthService) Signup(ctx context.Context, email string, password string) (models.ID, error) {
 	u, _ := s.userRepo.GetByEmail(ctx, email)
 	if u != nil {
@@ -43,6 +44,7 @@ func (s *AuthService) Signup(ctx context.Context, email string, password string)
 		Password: string(hash),
 	}
 
+	// TODO: Insert should return the user
 	if err := s.userRepo.Insert(ctx, user); err != nil {
 		return "", err
 	}
