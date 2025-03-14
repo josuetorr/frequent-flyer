@@ -22,9 +22,8 @@ func TestSignup_Successful(t *testing.T) {
 		Return(u, nil)
 	msr := services.NewMockSessionRepository(ctrl)
 
-	as := services.NewAuthService(mur, msr)
-
 	// act
+	as := services.NewAuthService(mur, msr)
 	res, err := as.Signup(context.Background(), "test@test.com", "password")
 	// assert
 	if err != nil {
