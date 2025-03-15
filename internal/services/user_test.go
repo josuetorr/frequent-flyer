@@ -106,3 +106,23 @@ func TestUpdatePassword_Successful(t *testing.T) {
 		t.Errorf("Expected updated user to have password: %s. Resulting password: %s", newPassword, u.Password)
 	}
 }
+
+func TestUpdatePassword_UserNotFound_Failure(t *testing.T) {
+	// setup
+	u := &models.User{ID: "test_user_qwe"}
+	ctrl, ctx := gomock.WithContext(context.Background(), t)
+	ur := services.NewMockUserRepository(ctrl)
+	expectedErr := errors.New("User not found")
+	ur.EXPECT().
+		GetById(gomock.Eq(ctx), gomock.Any()).
+		Return(nil, expectedErr)
+
+	// act
+	as := services.NewUserService(ur)
+	err := as.VerifyUser(ctx, u.ID)
+
+	// assert
+	if !errors.Is(err, expectedErr) {
+		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
+	}
+}
