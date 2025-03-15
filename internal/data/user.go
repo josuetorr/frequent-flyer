@@ -8,7 +8,10 @@ import (
 )
 
 const (
-	createUserQuery         = "INSERT INTO users (firstname, lastname, email, deleted_at, verified, password) VALUES ($1, $2, $3, $4, $5, $6)"
+	createUserQuery = `INSERT INTO users (firstname, lastname, email, deleted_at, verified, password) 
+  VALUES ($1, $2, $3, $4, $5, $6)
+  RETURNING *
+  `
 	selectUserByIdQuery     = "SELECT * FROM users WHERE id = $1"
 	selectUserByEmailQuery  = "SELECT * FROM users WHERE email = $1"
 	selectRefreshTokenQuery = "SELECT refresh_token FROM users WHERE id = $1"
@@ -35,8 +38,9 @@ func NewUserRepository(db *DBPool) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Insert(ctx context.Context, u *models.User) error {
-	_, err := r.db.Exec(
+func (r *UserRepository) Insert(ctx context.Context, u *models.User) (*models.User, error) {
+	var user models.User
+	err := r.db.QueryRow(
 		ctx,
 		createUserQuery,
 		u.Firstname,
@@ -45,8 +49,15 @@ func (r *UserRepository) Insert(ctx context.Context, u *models.User) error {
 		u.DeletedAt,
 		u.Verified,
 		u.Password,
+	).Scan(
+		&user.ID,
+		&user.Firstname,
+		&user.Lastname,
+		&user.Email,
+		&user.DeletedAt,
+		&user.Verified,
 	)
-	return err
+	return &user, err
 }
 
 func (r *UserRepository) get(ctx context.Context, by string, value string) (*models.User, error) {

@@ -8,7 +8,7 @@ import (
 
 type (
 	UserRepository interface {
-		Insert(ctx context.Context, userID *models.User) error
+		Insert(ctx context.Context, userID *models.User) (*models.User, error)
 		GetById(ctx context.Context, userID models.ID) (*models.User, error)
 		GetByEmail(ctx context.Context, email string) (*models.User, error)
 		Update(ctx context.Context, userID models.ID, user *models.User) error
