@@ -126,3 +126,26 @@ func TestUpdatePassword_UserNotFound_Failure(t *testing.T) {
 		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
 	}
 }
+
+func TestUpdatePassword_UpdateFail_Failure(t *testing.T) {
+	// setup
+	u := &models.User{ID: "test_user_qwe"}
+	ctrl, ctx := gomock.WithContext(context.Background(), t)
+	ur := services.NewMockUserRepository(ctrl)
+	expectedErr := errors.New("Internal server error")
+	ur.EXPECT().
+		GetById(gomock.Eq(ctx), gomock.Any()).
+		Return(u, nil)
+	ur.EXPECT().
+		Update(gomock.Eq(ctx), gomock.Eq(u.ID), gomock.Eq(u)).
+		Return(expectedErr)
+
+	// act
+	as := services.NewUserService(ur)
+	err := as.VerifyUser(ctx, u.ID)
+
+	// assert
+	if !errors.Is(err, expectedErr) {
+		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
+	}
+}
