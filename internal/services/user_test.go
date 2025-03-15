@@ -42,15 +42,37 @@ func TestVerifyUser_UserNotFound_Failure(t *testing.T) {
 	ur.EXPECT().
 		GetById(gomock.Eq(ctx), gomock.Any()).
 		Return(nil, expectedErr)
-	// TODO: write behaviour
-	u := &models.User{ID: "test_user_qwe", Verified: false}
+	u := &models.User{ID: "test_user_qwe"}
 
 	// act
 	as := services.NewUserService(ur)
 	err := as.VerifyUser(ctx, u.ID)
 
 	// assert
-	if expectedErr != err {
+	if !errors.Is(err, expectedErr) {
+		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
+	}
+}
+
+func TestVerifyUser_UpdateFailed_Failure(t *testing.T) {
+	// setup
+	u := &models.User{ID: "test_user_qwe", Verified: false}
+	ctrl, ctx := gomock.WithContext(context.Background(), t)
+	ur := services.NewMockUserRepository(ctrl)
+	expectedErr := errors.New("Internal server error")
+	ur.EXPECT().
+		GetById(gomock.Eq(ctx), gomock.Any()).
+		Return(u, nil)
+	ur.EXPECT().
+		Update(gomock.Eq(ctx), gomock.Any(), gomock.Any()).
+		Return(expectedErr)
+
+	// act
+	as := services.NewUserService(ur)
+	err := as.VerifyUser(ctx, u.ID)
+
+	// assert
+	if !errors.Is(err, expectedErr) {
 		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
 	}
 }
