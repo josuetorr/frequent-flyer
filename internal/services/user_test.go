@@ -7,6 +7,7 @@ import (
 
 	"github.com/josuetorr/frequent-flyer/internal/models"
 	"github.com/josuetorr/frequent-flyer/internal/services"
+	"github.com/josuetorr/frequent-flyer/internal/utils"
 	"go.uber.org/mock/gomock"
 )
 
@@ -74,5 +75,34 @@ func TestVerifyUser_UpdateFailed_Failure(t *testing.T) {
 	// assert
 	if !errors.Is(err, expectedErr) {
 		t.Errorf("Expected error: %s. Received error: %s", expectedErr, err)
+	}
+}
+
+func TestUpdatePassword_Successful(t *testing.T) {
+	// setup
+	u := &models.User{ID: "test_user_qwe", Password: "password"}
+	newPassword := "new_password"
+	ctrl, ctx := gomock.WithContext(context.Background(), t)
+	ur := services.NewMockUserRepository(ctrl)
+	ur.EXPECT().
+		GetById(gomock.Eq(ctx), gomock.Any()).
+		Return(u, nil)
+	ur.EXPECT().
+		Update(gomock.Eq(ctx), gomock.Any(), gomock.Any()).
+		DoAndReturn(func(_ context.Context, uID string, u *models.User) error {
+			bytes, _ := utils.HashPassword(newPassword)
+			u.Password = string(bytes)
+			return nil
+		})
+
+	// act
+	as := services.NewUserService(ur)
+	err := as.UpdatePassword(ctx, u.ID, "new_password")
+	// assert
+	if err != nil {
+		t.Errorf("Expected update password to be sucessful. Error: %s", err)
+	}
+	if err := utils.ComparePassword(u.Password, newPassword); err != nil {
+		t.Errorf("Expected updated user to have password: %s. Resulting password: %s", newPassword, u.Password)
 	}
 }
