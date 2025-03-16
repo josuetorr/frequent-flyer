@@ -29,7 +29,7 @@ func BaseLayout() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html data-theme=\"retro\"><head><meta name=\"htmx-config\" content=\"{&#34;responseHandling&#34;: [{&#34;code&#34;:&#34;.*&#34;, &#34;swap&#34;: true}]}\"><!--all responses are swapped--><link rel=\"stylesheet\" href=\"/public/styles/style.css\"><script src=\"/public/js/htmx.js\" defer></script><script src=\"/public/js/focusAfterRequest.js\" defer></script></head><body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html data-theme=\"retro\"><head><meta name=\"htmx-config\" content=\"{&#34;responseHandling&#34;: [{&#34;code&#34;:&#34;.*&#34;, &#34;swap&#34;: true}]}\"><link rel=\"stylesheet\" href=\"/public/styles/style.css\"><script src=\"/public/js/htmx.js\" defer></script><script src=\"/public/js/focusAfterRequest.js\" defer></script></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,0 +1,11 @@
+package components
+
+import "github.com/josuetorr/frequent-flyer/server/handlers"
+
+templ Nav() {
+	<nav class="navbar bg-base-100 flex justify-between w-full p-2">
+		//TODO: write a better nav
+		<span class="text-xl">FQ</span>
+		<button class="btn" hx-post={ handlers.LogoutEndpoint }>logout</button>
+	</nav>
+}
