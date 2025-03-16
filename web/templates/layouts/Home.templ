@@ -1,0 +1,10 @@
+package layouts
+
+import "github.com/josuetorr/frequent-flyer/web/templates/components"
+
+templ HomeLayout() {
+	@BaseLayout() {
+		@components.Nav()
+		{ children... }
+	}
+}
